@@ -1,4 +1,4 @@
-
+*.swp
 imagemagic/bin/conjure
 imagemagic/bin/animate
 imagemagic/bin/compare
