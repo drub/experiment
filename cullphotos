@@ -1,0 +1,120 @@
+#! /bin/bash
+
+# ----------------------------------------
+# Constants
+# ----------------------------------------
+readonly origIFS=$IFS
+readonly progVer="1.0"
+readonly dashLineLength=60
+readonly uninitialized="UNINITIALIZED"
+
+# ----------------------------------------
+# Globals
+# ----------------------------------------
+debug="TRUE"    #debug
+debug="FALSE"   #debug
+recordCount=0
+firstLinePrinted="FALSE"
+
+# ----------------------------------------
+# Libraries
+# ----------------------------------------
+libList="${HOME}/bin/lib/dashline"
+
+for i in $libList; do
+    if [[ -r $i ]]; then    # Does it exist?
+        . $i                # Source the library file.
+    else
+        printf "%s\n" "ERROR: Library file not found. Could not source library file."
+        printf "%s\n" "File: $i"
+        exit
+    fi
+done
+
+# ----------------------------------------
+# ----------------------------------------
+# main Main MAIN
+# ----------------------------------------
+# ----------------------------------------
+
+if [[ "$debug" == "TRUE" ]]; then
+  # DEBUG information for the script.
+  DashLine 70 "+"
+  printf "%s\n"  "++ dashLineLength ............... .$dashLineLength."
+fi
+
+if [[ ! -d ../jpg ]]; then
+  printf "%s\n"  "++ ERROR: ../jpg directory not found."
+  printf "%s\n"  "   This script expects a ../jpg directory where .JPG files"
+  printf "%s\n"  "   can be found. You may need to cd() to that directory."
+  printf "%s\n"  "   Now exiting ...."
+  exit 1                            # Error 
+fi
+
+for i in *; do
+    ((recordCount++))
+    fileName=${i%%.*}               # Longest match from the end.
+    jpgFile="../jpg/${fileName}.JPG"
+    deleteCandidate="$i"
+
+    if [ "$debug" == "TRUE" ]; then
+        DashLine dashLineLength "-" " $recordCount " 10
+        printf "%s\n" "RAW file ......................... $fileName"
+        printf "%s\n" "Look for JPG ..................... $jpgFile"
+        printf "%s\n" "Delete candidate ................. $deleteCandidate"
+    fi
+
+    if [ ! -e $jpgFile ]; then
+        if [[ "$debug" == "TRUE" ]]; then
+            printf "%s\n" "++ JPG not Found: DELETE RAW"
+        fi
+        printf "%s\n" "rm $deleteCandidate"
+    else
+        if [[ "$debug" == "TRUE" ]]; then
+            printf "%s\n" "++ JPG found. Leave RAW file"
+        fi
+    fi
+
+
+done            # while read recordID  ...
+
+# ----------------------------------------
+# ----------------------------------------
+  exit 0  # Without this, the comment section will execute and error out.
+# ----------------------------------------
+# ----------------------------------------
+
+-----------------
+-- Description --
+-----------------
+The Problem
+  When taking photos, the camera generates both raw (.CR2) and .JPG files. The
+  raw files are much larger than the JPG files. Viewers run much faster
+  rendering the JPG files than the raw files, so, I tend to view JPG files.
+  While viewing the files, I use the viewer to delete some of the JPG images.
+  Don't want to keep all the images captured. When a JPG is deleted, the
+  corresponding raw files should also be deleted.
+
+This script examines both the jpg and the raw directory. Whenever a raw (.CR2)
+file exists, but a corresponding .JPG does not exist, generate a rm() command
+to remove the raw file. This is far easier, and FAR less error prone, than me
+manually deleting the pair of raw and JPG files. Pipe the output into a file,
+give it execute permission, and the raw files are easily and reliably deleted.
+
+-------------
+-- ToDo    --
+-------------
+- Make the user CWD be the parent to the jpg and raw directories, instead of 
+  CWD = "raw" directory. It makes the script more symetric. Better asthetics?
+
+-------------
+-- History --
+-------------
+
+# ----------------------------------------------------------------------
+# 2018-06-17
+# Version 1.0
+# ----------------------------------------------------------------------
+First functioning version.
+CWD must be a "raw" directory. Will change in a future version.
+
