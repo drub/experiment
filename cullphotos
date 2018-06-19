@@ -111,10 +111,10 @@ give it execute permission, and the raw files are easily and reliably deleted.
 -- History --
 -------------
 
-# ----------------------------------------------------------------------
-# 2018-06-17
-# Version 1.0
-# ----------------------------------------------------------------------
+----------------------------------------------------------------------
+  2018-06-17
+  Version 1.0
+----------------------------------------------------------------------
 First functioning version.
 CWD must be a "raw" directory. Will change in a future version.
 
