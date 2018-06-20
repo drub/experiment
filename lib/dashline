@@ -1,13 +1,7 @@
 #! /bin/bash
 
-# Display debug info
-debug="TRUE"
-debug="FALSE"
-
-# TRUE: Run this file as a program.
-# FALSE: Source this within another script.
-unitTests="TRUE"
-unitTests="FALSE"
+unitTests="TRUE"     # TRUE: Run this file as a program.
+unitTests="FALSE"    # FALSE: Source this within another script.
 
 # ----------------------------------------
   function DashLine () {
@@ -24,8 +18,12 @@ unitTests="FALSE"
 #   $4  The character location where $3 should start.
 #   
 # Globals used
-#   $debug
+#
 # ----------------------------------------
+# Display debug info
+  local debug="TRUE"
+  local debug="FALSE"
+
   local countChr=$1         # Required. If only param, a "-" is used.
   local lineChr=$2          # Optional. Required to use the following params.
   local displayStr=$3       # Optional. The string to place within the line.
@@ -185,6 +183,24 @@ fi
 #  ToDo
 # ----------------------------------------
 
+history=' \
+------------- \
+-- History -- \
+------------- \
+'
 
-
-
+history=' \
+---------------------------------------------------------------------- \
+  2018-06-20 \
+  Version 2.0 \
+---------------------------------------------------------------------- \
+- Made debug a local var. When a sourcing script uses debug, debug mode is not \
+  set in this context. \
+- Created the unitTest variable. Set TRUE to run the unit tests, following \
+  changes. \
+- Created this History section. Place text in variable so it is not executed. \
+  Cannot make a comment cuz then cannot cut and paste into a git commit \
+  comment. \
+ \
+ \
+'
