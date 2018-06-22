@@ -1,0 +1,135 @@
+#! /bin/bash
+
+# ----------------------------------------
+# Constants
+# ----------------------------------------
+readonly origIFS=$IFS
+readonly progVer="1.0"
+readonly progName=$(basename $0)
+readonly dashLineLength=60
+readonly uninitialized="UNINITIALIZED"
+readonly arg1=$1
+readonly argList=$*
+# Files paths should be in single quotes. Do not excape spaces or parens.
+readonly cprimeFile='/Users/thedrub/cloud_storage/Dropbox (cPrime Inc.)/for David Bacon/cPrime.txt'
+readonly agileFile='/Users/thedrub/Sync/Work/Agile/agile.txt'
+readonly personalFile='/Users/thedrub/cloud_storage/Dropbox (Personal)/doc/journal.txt'
+
+# ----------------------------------------
+# Globals
+# ----------------------------------------
+debug="TRUE"    #debug
+debug="FALSE"   #debug
+
+# ----------------------------------------
+# Libraries
+# ----------------------------------------
+libList="${HOME}/bin/lib/dashline"
+
+for i in $libList; do
+    if [[ -r $i ]]; then    # Does it exist?
+        . $i                # Source the library file.
+    else
+        printf "%s\n" "ERROR: Library file not found. Could not source library file."
+        printf "%s\n" "File: $i"
+        exit
+    fi
+done
+
+# ----------------------------------------
+  function ProgUsage () {
+# ----------------------------------------
+  printf "\
+Name
+  $progName [ <journal specifier> ]
+
+Where
+  <journal specifier> is one of
+    personal : Open a file in my local FS
+    agile    : Open a file on my personal DropBox
+    cprime   : Open a file on my cPrime DropBox
+
+  If no <journal specifier> is provided, defaults to \"cprime\".
+
+Files
+    personal: $personalFile
+    agile   : $agileFile
+    cprime  : $cprimeFile
+
+ver. $progVer
+
+  "
+}   # function
+
+
+# ----------------------------------------
+# ----------------------------------------
+# main Main MAIN
+# ----------------------------------------
+# ----------------------------------------
+
+if [ "$debug" == "TRUE" ]; then
+    DashLine $dashLineLength "-"
+    printf "%s\n" "++ arg1 ............................. $arg1"
+    printf "%s\n" "++ arg list ......................... $argList"
+fi
+
+
+# Identify the target file.;
+if [[ $arg1 == "" ]]; then
+    targetFile="$cprimeFile"        # Default value. Used when no $1 supplied.
+elif [[ $arg1 == "cprime" ]]; then
+    targetFile="$cprimeFile"
+elif [[ $arg1 == "agile" ]]; then
+    targetFile="$agileFile"
+elif [[ $arg1 == "personal" ]]; then
+    targetFile="$personalFile"
+else
+    printf "%s\n" "++ ERROR: <journal specifier> not known: $arg1"
+    printf "%s\n"
+    ProgUsage
+    exit 1      # Error = 1
+fi
+
+if [[ ! -w $targetFile ]]; then
+    printf "%s\n" "++ ERROR: Cannot open journal file."
+    printf "%s\n" "   File: $targetFile"
+    exit 2      # Error = 2
+fi
+    
+
+if [ "$debug" == "TRUE" ]; then
+    printf "%s\n" "++ Target file ...................... $targetFile"
+    printf "%s\n" "++ Here's where we would start vi on the target file, but we're in debug mode."
+else
+    vi "$targetFile"
+fi
+
+
+# ----------------------------------------
+# ----------------------------------------
+  exit 0  # Without this, the comment section will execute and error out.
+# ----------------------------------------
+# ----------------------------------------
+
+
+-------------
+-- ToDo    --
+-------------
+- 
+
+-------------
+-- History --
+-------------
+
+----------------------------------------------------------------------
+ 2018-06-21
+ Version 1.0
+----------------------------------------------------------------------
+- Works for parameters
+  - <empty>, which opens the cPrime file
+  - cprime, which opens the cPrime file, in my cPrime DropBox
+  - personal, the personal file, in my private DropBox
+  - agile, which opens a file in my local FS
+
+
