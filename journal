@@ -14,6 +14,7 @@ readonly argList=$*
 readonly cprimeFile='/Users/thedrub/cloud_storage/Dropbox (cPrime Inc.)/for David Bacon/cPrime.txt'
 readonly agileFile='/Users/thedrub/Sync/Work/Agile/agile.txt'
 readonly personalFile='/Users/thedrub/cloud_storage/Dropbox (Personal)/doc/journal.txt'
+readonly gratitudeFile='/Users/thedrub/Sync/home/gratitude.txt'
 
 # ----------------------------------------
 # Globals
@@ -84,6 +85,8 @@ elif [[ $arg1 == "agile" ]]; then
     targetFile="$agileFile"
 elif [[ $arg1 == "personal" ]]; then
     targetFile="$personalFile"
+elif [[ $arg1 == "grat" ]]; then
+    targetFile="$gratitudeFile"
 else
     printf "%s\n" "++ ERROR: <journal specifier> not known: $arg1"
     printf "%s\n"
