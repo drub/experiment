@@ -17,15 +17,16 @@ debug="FALSE"
 error="FALSE"
 recordCount=0
 firstLinePrinted="FALSE"
+deleteCount=0
 
 # ----------------------------------------
 # Libraries
 # ----------------------------------------
 libList="${HOME}/bin/lib/dashline"
 
-for i in $libList; do
-    if [[ -r $i ]]; then    # Does it exist?
-        . $i                # Source the library file.
+for i in ${libList}; do
+    if [[ -r ${i} ]]; then    # Does it exist?
+        . ${i}                # Source the library file.
     else
         printf "%s\n" "ERROR: Library file not found. Could not source library file."
         printf "%s\n" "File: $i"
@@ -81,26 +82,26 @@ else
     fi
 fi
 
-if [[ $error == "TRUE" ]]; then
+if [[ ${error} == "TRUE" ]]; then
   printf "%s\n"  "++ Now exiting ...."
   exit 2                            # Error 
 fi
 
-rawCount=$(ls $rawDir | wc -l)
-printf -v rawCount "%d" $rawCount
+rawCount=$(ls ${rawDir} | wc -l)
+printf -v rawCount "%d" ${rawCount}
     if [ "$debug" == "TRUE" ]; then
         printf "%s\n" "RAW count .................. $rawCount"
     fi
 
-if [[ $rawCount == 0 ]];then
+if [[ ${rawCount} == 0 ]];then
   printf "%s\n"  "Empty $rawDir directory. Exit."
   printf "%s\n"  "   Since there are no raw files, no need to run."
   printf "%s\n"  "Now exiting ...."
 fi
 
-for i in $rawDir/*; do
+for i in ${rawDir}/*; do
     ((recordCount++))
-    fileName=$(basename $i)
+    fileName=$(basename ${i})
     fileName=${fileName%%.*}               # Longest match from the end.
     jpgFile="jpg/${fileName}.JPG"
     rawFile="raw/${fileName}.CR2"
@@ -113,13 +114,13 @@ for i in $rawDir/*; do
         printf "%s\n" "Delete candidate ................. $deleteCandidate"
     fi
 
-    if [ ! -e $jpgFile ]; then
+    if [ ! -e ${jpgFile} ]; then
         ((deleteCount++))
         if [[ "$debug" == "TRUE" ]]; then
             printf "%s\n" "Delete count ..................... $deleteCount"
             printf "%s\n" "++ JPG not Found: DELETE RAW"
         fi
-        if [[ $deleteCount == 1 ]]; then
+        if [[ ${deleteCount} == 1 ]]; then
             printf "%s\n" "#!/bin/bash"
             printf "%s\n"
             printf "%s\n" "# This file Created by: $progName, ver $progVer"
@@ -136,7 +137,7 @@ for i in $rawDir/*; do
 
 
 done            # while read recordID  ...
-if [[ $deleteCount > 0 ]]; then
+if [[ ${deleteCount} > 0 ]]; then
     printf "%s\n"
     printf "%s\n" "# Files to delete ..... $deleteCount"
 fi
