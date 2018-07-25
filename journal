@@ -4,7 +4,7 @@
 # Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="1.0"
+readonly progVer="1.1"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
@@ -12,9 +12,10 @@ readonly arg1=$1
 readonly argList=$*
 # Files paths should be in single quotes. Do not excape spaces or parens.
 readonly cprimeFile='/Users/thedrub/cloud_storage/Dropbox (cPrime Inc.)/for David Bacon/cPrime.txt'
-readonly agileFile='/Users/thedrub/Sync/Work/Agile/agile.txt'
-readonly personalFile='/Users/thedrub/cloud_storage/Dropbox (Personal)/doc/journal.txt'
-readonly gratitudeFile='/Users/thedrub/Sync/home/gratitude.txt'
+readonly agileFile="${HOME}/Sync/Work/Agile/agile.txt"
+readonly gratitudeFile="${HOME}/Sync/home/gratitude.txt"
+readonly jobFile="${HOME}/Sync/home/job-search/2017-search/job.txt"
+readonly personalFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/journal.txt"
 
 # ----------------------------------------
 # Globals
@@ -53,9 +54,10 @@ Where
   If no <journal specifier> is provided, defaults to \"cprime\".
 
 Files
-    personal: $personalFile
     agile   : $agileFile
     cprime  : $cprimeFile
+    job     : $jobFile
+    personal: $personalFile
 
 ver. $progVer
 
@@ -87,6 +89,8 @@ elif [[ $arg1 == "personal" ]]; then
     targetFile="$personalFile"
 elif [[ $arg1 == "grat" ]]; then
     targetFile="$gratitudeFile"
+elif [[ $arg1 == "job" ]]; then
+    targetFile="$jobFile"
 else
     printf "%s\n" "++ ERROR: <journal specifier> not known: $arg1"
     printf "%s\n"
@@ -124,6 +128,12 @@ fi
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2018-06-21
+ Version 1.1
+----------------------------------------------------------------------
+- Added the "job" file to the syntax.
 
 ----------------------------------------------------------------------
  2018-06-21
