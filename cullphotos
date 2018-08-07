@@ -4,7 +4,7 @@
 # Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="2.0"
+readonly progVer="2.1"
 readonly dashLineLength=60
 readonly progName=$(basename $0)
 readonly uninitialized="UNINITIALIZED"
@@ -126,8 +126,15 @@ for i in ${rawDir}/*; do
             printf "%s\n" "# This file Created by: $progName, ver $progVer"
             printf "%s\n" "# Grant execute permission to this file and execute."
             printf "%s\n"
+
+            # The executing script will output this so the user knows what is
+            # happening.
+            printf "%s\n" "printf \"%s\n\" "
+            printf "%s\n" "printf \"%s\n\" \"Let's delete those unwanted RAW files .......\" "
+            printf "%s\n" "printf \"%s\n\" "
         fi
 
+        printf "%s\n" "printf \"%s\n\" \"Remove .....$deleteCandidate\" "
         printf "%s\n" "rm $deleteCandidate"
     else
         if [[ "$debug" == "TRUE" ]]; then
@@ -139,7 +146,11 @@ for i in ${rawDir}/*; do
 done            # while read recordID  ...
 if [[ ${deleteCount} > 0 ]]; then
     printf "%s\n"
-    printf "%s\n" "# Files to delete ..... $deleteCount"
+    printf "%s\n" "# $deleteCount files to delete"
+    # The executing script will output this so the user knows what is
+    # happening.
+    printf "%s\n" "printf \"%s\n\" "
+    printf "%s\n" "printf \"%s\n\" \"$deleteCount files deleted.\" "
 fi
 
 # ----------------------------------------
@@ -174,6 +185,15 @@ give it execute permission, and the raw files are easily and reliably deleted.
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+  2018-08-07
+  Version 2.2
+----------------------------------------------------------------------
+- Added a printf to the executable file output by this script.
+  Lets the user know what file is being deleted as the script
+  is running.
+- Minor changes to formatting of output
 
 ----------------------------------------------------------------------
   2018-06-20
