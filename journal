@@ -14,8 +14,9 @@ readonly argList=$*
 readonly cprimeFile='/Users/thedrub/cloud_storage/Dropbox (cPrime Inc.)/for David Bacon/cPrime.txt'
 readonly agileFile="${HOME}/Sync/Work/Agile/agile.txt"
 readonly gratitudeFile="${HOME}/Sync/home/gratitude.txt"
-readonly jobFile="${HOME}/Sync/home/job-search/2017-search/job.txt"
-readonly personalFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/journal.txt"
+readonly jobFile="${HOME}/Sync/home/job-search/job.txt"
+readonly personalFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/journal_personal.txt"
+readonly divorceFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/journal_divorce.txt"
 
 # ----------------------------------------
 # Globals
@@ -47,9 +48,10 @@ Name
 
 Where
   <journal specifier> is one of
-    personal : Open a file in my local FS
+    personal : Open a file on my personal DropBox
     agile    : Open a file on my personal DropBox
     cprime   : Open a file on my cPrime DropBox
+    divorce  : Open a file on my personal DropBox
 
   If no <journal specifier> is provided, defaults to \"cprime\".
 
@@ -58,6 +60,7 @@ Files
     cprime  : $cprimeFile
     job     : $jobFile
     personal: $personalFile
+    divorce : $divorceFile
 
 ver. $progVer
 
@@ -91,6 +94,8 @@ elif [[ $arg1 == "grat" ]]; then
     targetFile="$gratitudeFile"
 elif [[ $arg1 == "job" ]]; then
     targetFile="$jobFile"
+elif [[ $arg1 == "divorce" ]]; then
+    targetFile="$divorceFile"
 else
     printf "%s\n" "++ ERROR: <journal specifier> not known: $arg1"
     printf "%s\n"
