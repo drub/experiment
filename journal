@@ -1,17 +1,21 @@
 #! /bin/bash
 
 # ----------------------------------------
-# Constants
+#Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="1.1"
+readonly progVer="1.2"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
 readonly arg1=$1
 readonly argList=$*
+
+# ----------------------------------------
+# File locations
+# ----------------------------------------
 # Files paths should be in single quotes. Do not excape spaces or parens.
-readonly cprimeFile='/Users/thedrub/cloud_storage/Dropbox (cPrime Inc.)/for David Bacon/cPrime.txt'
+readonly workFile='/Users/thedrub/Sync/doc/journal/work/work_journal_file.txt'
 readonly agileFile="${HOME}/Sync/Work/Agile/agile.txt"
 readonly gratitudeFile="${HOME}/Sync/home/gratitude.txt"
 readonly jobFile="${HOME}/Sync/home/job-search/job.txt"
@@ -48,19 +52,22 @@ Name
 
 Where
   <journal specifier> is one of
-    personal : Open a file on my personal DropBox
-    agile    : Open a file on my personal DropBox
-    cprime   : Open a file on my cPrime DropBox
-    divorce  : Open a file on my personal DropBox
+    work      : Work stuff <default>
+    personal  : Personal topics and reflections
+    agile     : Agile related stuff
+    divorce   : Open a file on my personal DropBox
+    job       : Job search
+    grat      : Gratitude journal
 
-  If no <journal specifier> is provided, defaults to \"cprime\".
+  If no <journal specifier> is provided, defaults to \"work\".
 
 Files
-    agile   : $agileFile
-    cprime  : $cprimeFile
-    job     : $jobFile
-    personal: $personalFile
-    divorce : $divorceFile
+    agile     : $agileFile
+    cprime    : $workFile
+    job       : $jobFile
+    personal  : $personalFile
+    divorce   : $divorceFile
+    grat      : $gratitudeFile
 
 ver. $progVer
 
@@ -83,9 +90,9 @@ fi
 
 # Identify the target file.;
 if [[ $arg1 == "" ]]; then
-    targetFile="$cprimeFile"        # Default value. Used when no $1 supplied.
+    targetFile="$workFile"        # Default value. Used when no $1 supplied.
 elif [[ $arg1 == "cprime" ]]; then
-    targetFile="$cprimeFile"
+    targetFile="$workFile"
 elif [[ $arg1 == "agile" ]]; then
     targetFile="$agileFile"
 elif [[ $arg1 == "personal" ]]; then
@@ -133,6 +140,22 @@ fi
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2019-10-23
+ Version 1.2
+----------------------------------------------------------------------
+Want to re-architect file locations. Desires
+- Keep it on a network available drive
+- Retire Dropbox use and use the "sync" service
+- All <filename>.txt should be in the Sync/journal/<name> hierarchy
+- All journal file names should be <name>_journal_file.txt
+- These changes make it easier to find the files in a predictable location
+  instead of maintaining a file lookup mechanism. Plan to make those changes
+  when I re-implement in python.
+
+Rename the "cprime" version to "work" in this code
+Move the work file to Sync/journal/work/work_journal_file.txt
 
 ----------------------------------------------------------------------
  2018-06-21
