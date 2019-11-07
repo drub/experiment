@@ -1,0 +1,25 @@
+#!/Users/thedrub/anaconda3/bin/python
+
+import pandas as pd
+df = pd.DataFrame()
+print (df) #debug
+
+filepath = "/Users/thedrub/Sync/doc/journal/work/work_journal_file.txt"
+filepath = "./gethrs_input.txt"
+
+line_counter = 0
+
+#fd = open(filepath, 'r')
+with open(filepath, 'r') as fd:
+    for line in fd:
+        line_counter += 1
+        #print(line, end='')
+        tokens = line.split("::")
+        if tokens[0] == "TIME":
+            #print(f"Line ..................... {line_counter}") #debug
+            print (f"[{line_counter}] {tokens}")
+
+
+
+fd.close()
+
