@@ -1,10 +1,7 @@
 #!/Users/thedrub/anaconda3/bin/python
 
 import pandas as pd
-df = pd.DataFrame(columns = ['Line No', \
-                             'Record Type', 'Record Ver', 'Day', 'Date', \
-                             'Start', 'End', 'Elapsed', 'Client', 'State', \
-                             'Comment', 'Remainder'])
+df = pd.DataFrame()
 print (df) #debug
 
 filepath = "/Users/thedrub/Sync/doc/journal/work/work_journal_file.txt"
@@ -16,21 +13,12 @@ line_counter = 0
 with open(filepath, 'r') as fd:
     for line in fd:
         line_counter += 1
-
         #print(line, end='')
         tokens = line.split("::")
         if tokens[0] == "TIME":
             #print(f"Line ..................... {line_counter}") #debug
-            tokens.insert(0, line_counter)
+            print (f"[{line_counter}] {tokens}")
 
-            #print (f"[{line_counter}] {tokens}")
-            print (f"{tokens}")
-
-            #df.append(tokens)
-            #df.loc[len(df)] = tokens
-
-#df.info() #debug
-print (df) #debug
 
 
 fd.close()
