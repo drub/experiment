@@ -4,7 +4,7 @@
 #Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="1.3"
+readonly progVer="1.4"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
@@ -14,14 +14,13 @@ readonly argList=$*
 # ----------------------------------------
 # File locations
 # ----------------------------------------
-# Files paths should be in single quotes. Do not excape spaces or parens.
-readonly workFile='/Users/thedrub/Sync/doc/journal/work/work_journal_file.txt'
+readonly workFile="${HOME}/Sync/doc/journal/work/journal_work.txt"
 readonly agileFile="${HOME}/Sync/Work/Agile/agile.txt"
-readonly gratitudeFile="${HOME}/Sync/home/gratitude.txt"
 readonly jobFile="${HOME}/Sync/home/job-search/job.txt"
-readonly personalFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/journal_personal.txt"
-readonly divorceFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/journal_divorce.txt"
-readonly investFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/investments.txt"
+readonly gratitudeFile="${HOME}/Sync/doc/journal/journal_gratitude.txt"
+readonly divorceFile="${HOME}/Sync/doc/journal/journal_divorce.txt"
+readonly personalFile="${HOME}/Sync/doc/journal/journal_personal.txt"
+readonly investFile="${HOME}/Sync/doc/journal/journal_investments.txt"
 
 
 # ----------------------------------------
@@ -154,6 +153,14 @@ Want to re-architect file locations. Desires
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2020-03-01
+ Version 1.4
+----------------------------------------------------------------------
+- Moved 4 files into ~/Sync/doc/journal structure.
+  Some were still in DropBox.
+
 
 ----------------------------------------------------------------------
  2020-03-01
