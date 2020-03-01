@@ -4,7 +4,7 @@
 #Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="1.2"
+readonly progVer="1.3"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
@@ -21,6 +21,8 @@ readonly gratitudeFile="${HOME}/Sync/home/gratitude.txt"
 readonly jobFile="${HOME}/Sync/home/job-search/job.txt"
 readonly personalFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/journal_personal.txt"
 readonly divorceFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/journal_divorce.txt"
+readonly investFile="${HOME}/cloud_storage/Dropbox (Personal)/doc/investments.txt"
+
 
 # ----------------------------------------
 # Globals
@@ -54,20 +56,22 @@ Where
   <journal specifier> is one of
     work      : Work stuff <default>
     personal  : Personal topics and reflections
+    invest    : Investments. Was previosly in \"personal\" file
     agile     : Agile related stuff
-    divorce   : Open a file on my personal DropBox
     job       : Job search
     grat      : Gratitude journal
+    divorce   : Open a file on my personal DropBox
 
   If no <journal specifier> is provided, defaults to \"work\".
 
 Files
+    personal  : $personalFile
+    invest    : $investFile
     agile     : $agileFile
     cprime    : $workFile
     job       : $jobFile
-    personal  : $personalFile
-    divorce   : $divorceFile
     grat      : $gratitudeFile
+    divorce   : $divorceFile
 
 ver. $progVer
 
@@ -93,6 +97,8 @@ if [[ $arg1 == "" ]]; then
     targetFile="$workFile"        # Default value. Used when no $1 supplied.
 elif [[ $arg1 == "cprime" ]]; then
     targetFile="$workFile"
+elif [[ $arg1 == "invest" ]]; then
+    targetFile="$investFile"
 elif [[ $arg1 == "agile" ]]; then
     targetFile="$agileFile"
 elif [[ $arg1 == "personal" ]]; then
@@ -135,16 +141,6 @@ fi
 -------------
 -- ToDo    --
 -------------
-- 
-
--------------
--- History --
--------------
-
-----------------------------------------------------------------------
- 2019-10-23
- Version 1.2
-----------------------------------------------------------------------
 Want to re-architect file locations. Desires
 - Keep it on a network available drive
 - Retire Dropbox use and use the "sync" service
@@ -154,6 +150,22 @@ Want to re-architect file locations. Desires
   instead of maintaining a file lookup mechanism. Plan to make those changes
   when I re-implement in python.
 
+
+-------------
+-- History --
+-------------
+
+----------------------------------------------------------------------
+ 2020-03-01
+ Version 1.3
+----------------------------------------------------------------------
+- Added "invest" to file list.
+- Purpose: Notes from investments events, etc.
+
+----------------------------------------------------------------------
+ 2019-10-23
+ Version 1.2
+----------------------------------------------------------------------
 Rename the "cprime" version to "work" in this code
 Move the work file to Sync/journal/work/work_journal_file.txt
 
