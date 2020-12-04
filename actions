@@ -1,0 +1,7 @@
+#! /bin/bash
+
+echo
+echo
+echo
+echo
+grep -in Action:: /Users/thedrub/sync_synology/doc/journal/work/journal_work.txt | grep -iv Done:

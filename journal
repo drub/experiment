@@ -14,13 +14,13 @@ readonly argList=$*
 # ----------------------------------------
 # File locations
 # ----------------------------------------
-readonly workFile="${HOME}/Sync/doc/journal/work/journal_work.txt"
-readonly agileFile="${HOME}/Sync/Work/Agile/agile.txt"
-readonly jobFile="${HOME}/Sync/home/job-search/job.txt"
-readonly gratitudeFile="${HOME}/Sync/doc/journal/journal_gratitude.txt"
-readonly divorceFile="${HOME}/Sync/doc/journal/journal_divorce.txt"
-readonly personalFile="${HOME}/Sync/doc/journal/journal_personal.txt"
-readonly investFile="${HOME}/Sync/doc/journal/journal_investments.txt"
+readonly workFile="${HOME}/sync_synology/doc/journal/work/journal_work.txt"
+readonly agileFile="${HOME}/sync_synology/Work/Agile/agile.txt"
+readonly jobFile="${HOME}/sync_synology/home/job-search/job.txt"
+readonly gratitudeFile="${HOME}/sync_synology/doc/journal/journal_gratitude.txt"
+readonly divorceFile="${HOME}/sync_synology/doc/journal/journal_divorce.txt"
+readonly personalFile="${HOME}/sync_synology/doc/journal/journal_personal.txt"
+readonly investFile="${HOME}/sync_synology/doc/journal/journal_investments.txt"
 
 
 # ----------------------------------------
