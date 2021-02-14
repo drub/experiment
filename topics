@@ -1,0 +1,164 @@
+#! /Users/thedrub/anaconda3/bin/python
+
+# ----------------------------------------------------------------------
+# Libraries
+# ----------------------------------------------------------------------
+import re
+import os
+import sys
+import pandas as pd
+from optparse import OptionParser
+
+# ----------------------------------------------------------------------
+# Files
+# ----------------------------------------------------------------------
+inputFile = "/Users/thedrub/sync_synology/doc/journal/work/journal_work.txt"
+
+# ----------------------------------------------------------------------
+# Constants
+# ----------------------------------------------------------------------
+prog_config = \
+    {"name"          : os.path.basename(sys.argv[0]), \
+     "maj_ver"        : "1", \
+     "min_ver"        : "0", \
+    }
+prog_config["ver"] = prog_config["maj_ver"] + "." + prog_config["min_ver"]
+
+pattern_start_day = "^D::"
+pattern_topic     = "^Topic::"
+
+
+# ----------------------------------------------------------------------
+# Initializations
+# ----------------------------------------------------------------------
+ln_ptr = 0    # The "contents" list will index from 0
+
+# --------------------------------------------------
+def Process_File (line_ptr, days) :
+# --------------------------------------------------
+
+    if debug :
+        print("++++ Entered Process_File ....")
+        print("++ line_ptr ............. " + str(line_ptr))
+        print("++ days ................. " + str(days))
+        print("++")
+        content[line_ptr] = content[line_ptr].rstrip('\r\n')
+
+    day_counter = 1
+    for i in range(1, (days + 1)) :
+        if debug :
+            print("++ day_counter .......... " + str(day_counter))
+
+        # When displaying the D:: record, use [line_ptr+1] value to display the
+        # line number. "content" is indexed from 0. 
+        content[line_ptr] = content[line_ptr].rstrip('\r\n')
+        print ("-------- [" + str(line_ptr+1) + "] ----------- " + \
+                content[line_ptr]) 
+
+        while True :
+            # Loop break when a D:: record is found.
+            # While in the current day, print each Topic:: record
+
+            line_ptr += 1   # Move to the next line.
+            # Strip trailing EOL from current line.
+            content[line_ptr] = content[line_ptr].rstrip('\r\n')
+
+            #if debug :
+            #    print("++ line_ptr ............. " + str(line_ptr))
+
+            if re.search(pattern_topic, content[line_ptr]) :
+                # Found a pattern_topic record.
+                # Replace "::" with ":" in the Topic:: record.
+                content[line_ptr] = content[line_ptr].replace("::",":")
+                print ("- " + content[line_ptr])
+
+                #if debug :
+                #    print ("Topic [" + str(line_ptr + 1) + "]: - " + content[line_ptr])
+
+            if re.search(pattern_start_day, content[line_ptr]) :
+                # Found a pattern_start_day record.
+                # Exit this inner while loop that scans line-by-line.
+                if debug :
+                    print ("++ D:: match [" + str(line_ptr+1) + "]: " + content[line_ptr])
+
+                day_counter += 1    # A record was found.
+                break   # End while when a pattern_start_day is found
+
+                # Continue with  lines within this D:: interval
+
+        # End for i in range
+
+    return()    # End def
+# --------------------------------------------------
+
+# ----------------------------------------------------------------------
+# Main MAIN main
+# ----------------------------------------------------------------------
+
+debug = True
+debug = False
+
+# Initialize the options parser
+parser = OptionParser()
+parser.add_option("-c", type="int", dest="day_count", \
+                 help = "Display records for this many days.")
+"""
+# Could not get this to work. Grrrrr. Irritating.
+parser.add_option("-d", action="store_true", dest="debug", \
+                 help = "Set debug mode")
+parser.set_defaults(debug = False)
+"""
+
+# Collect any supplied options.
+(opts, args) = parser.parse_args()
+
+# Load the file contents
+in_fd = open(inputFile, 'r')
+content = in_fd.readlines()
+
+if debug :
+    print("++ options ..." + str(opts))
+    print()
+
+if opts.day_count == None :
+    opts.day_count = 1
+
+if debug :
+    print("++ Display records for " + str(opts.day_count) + " days.")
+
+# Get to the first D:: record. Skip the file's header section.
+while True :
+    if re.search(pattern_start_day, content[ln_ptr]) : 
+        break
+    ln_ptr += 1
+
+# Any initial lines in the input file have been skipped. There could be an
+# arbitrary number of lines preceeding the first day record.
+
+Process_File(ln_ptr, opts.day_count)
+exit()
+
+'''
+# ----------------------------------------------------------------------
+# TODO ToDo todo
+# ----------------------------------------------------------------------
+
+- 
+
+# ----------------------------------------------------------------------
+# History
+# ----------------------------------------------------------------------
+
+# --------------------------------------------------
+# topics, Ver: 1.0
+# --------------------------------------------------
+Initial version
+
+Usage: topics [options]
+
+Options:
+  -h, --help    show this help message and exit
+  -c DAY_COUNT  Display records for this many days.
+
+
+'''
