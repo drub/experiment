@@ -1,10 +1,12 @@
 #! /bin/bash
 
+# Uses environment variable $JOURNALPATH
+
 # ----------------------------------------
 #Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="1.4"
+readonly progVer="2.2"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
@@ -14,14 +16,7 @@ readonly argList=$*
 # ----------------------------------------
 # File locations
 # ----------------------------------------
-readonly workFile="${HOME}/sync_synology/doc/journal/work/journal_work.txt"
-readonly agileFile="${HOME}/sync_synology/Work/Agile/agile.txt"
-readonly jobFile="${HOME}/sync_synology/home/job-search/job.txt"
-readonly gratitudeFile="${HOME}/sync_synology/doc/journal/journal_gratitude.txt"
-readonly divorceFile="${HOME}/sync_synology/doc/journal/journal_divorce.txt"
-readonly personalFile="${HOME}/sync_synology/doc/journal/journal_personal.txt"
-readonly investFile="${HOME}/sync_synology/doc/journal/journal_investments.txt"
-
+# Now read from the $JOURNALPATH env variable
 
 # ----------------------------------------
 # Globals
@@ -49,34 +44,79 @@ done
 # ----------------------------------------
   printf "\
 Name
-  $progName [ <journal specifier> ]
+  $progName [ <file number> ] | -h
 
 Where
-  <journal specifier> is one of
-    work      : Work stuff <default>
-    personal  : Personal topics and reflections
-    invest    : Investments. Was previosly in \"personal\" file
-    agile     : Agile related stuff
-    job       : Job search
-    grat      : Gratitude journal
-    divorce   : Open a file on my personal DropBox
+  <journal file> is one of
+     0: work      : Work stuff <default>
+     1: personal  : Personal topics and reflections
+     2: grat      : Gratitude journal
+     3: agile     : Agile related stuff
+     4: invest    : Investments. Was previosly in \"personal\" file
+     5: job       : Job search
+     6: Rotary    : Rotary
+     7: PDA       : Product Delivery Alchemy
+     8: divorce   : Open a file on my personal DropBox
 
-  If no <journal specifier> is provided, defaults to \"work\".
+  If no <file number> is provided, defaults to 0.
+
+Journal files paths are stored in an environment variable \$JOURNALPATH
 
 Files
-    personal  : $personalFile
-    invest    : $investFile
-    agile     : $agileFile
-    cprime    : $workFile
-    job       : $jobFile
-    grat      : $gratitudeFile
-    divorce   : $divorceFile
+"
+  PrintEnvFileNames
 
-ver. $progVer
-
-  "
 }   # function
 
+# ----------------------------------------
+  function PrintEnvFileNames () {
+# ----------------------------------------
+# Print each file name in the env variable.
+
+    loopCounter=0
+    for fname in ${fileList[@]}; do
+        printf "%s\n" "    ${fileList[$loopCounter]}"
+        ((loopCounter++))
+    done    # for
+ 
+}   # function
+
+
+# ----------------------------------------
+  function PrintProgVer () {
+# ----------------------------------------
+    printf "%s\n" "
+ver. $progVer
+"
+}   # function
+
+# ----------------------------------------
+  function Initialize () {
+# ----------------------------------------
+    # Check to assure the search path environment variable is set.
+    # If not set, then exit
+    if [[  -z ${JOURNALPATH:-} ]]; then
+        printf "%s\n" "\
+ERROR: Environment variable not set.
+       The CONTACTSPATH variable must contain a list of files.
+"
+       exit 1
+   elif [ "$debug" == "TRUE" ]; then
+        printf "%s\n" "++ JOURNALPATH ...................... $JOURNALPATH"
+    fi
+
+    # Put the colon separated ENV var into an array
+    # Convert the JOURNALPATH string into the array fileList.
+    fileList=($(echo "$JOURNALPATH" | tr ':' '\n'))
+
+    # Identify how many files are listed in the $JOURNALPATH
+    fileCount=${#fileList[@]}
+    
+    if [ "$debug" == "TRUE" ]; then
+        printf "%s\n" "++ File count ....................... $fileCount"
+    fi
+
+}   #function
 
 # ----------------------------------------
 # ----------------------------------------
@@ -84,32 +124,24 @@ ver. $progVer
 # ----------------------------------------
 # ----------------------------------------
 
+#debug="TRUE"
 if [ "$debug" == "TRUE" ]; then
     DashLine $dashLineLength "-"
     printf "%s\n" "++ arg1 ............................. $arg1"
     printf "%s\n" "++ arg list ......................... $argList"
 fi
+#debug="FALSE"
 
+Initialize
 
-# Identify the target file.;
-if [[ $arg1 == "" ]]; then
-    targetFile="$workFile"        # Default value. Used when no $1 supplied.
-elif [[ $arg1 == "cprime" ]]; then
-    targetFile="$workFile"
-elif [[ $arg1 == "invest" ]]; then
-    targetFile="$investFile"
-elif [[ $arg1 == "agile" ]]; then
-    targetFile="$agileFile"
-elif [[ $arg1 == "personal" ]]; then
-    targetFile="$personalFile"
-elif [[ $arg1 == "grat" ]]; then
-    targetFile="$gratitudeFile"
-elif [[ $arg1 == "job" ]]; then
-    targetFile="$jobFile"
-elif [[ $arg1 == "divorce" ]]; then
-    targetFile="$divorceFile"
+if [[ ${arg1} = "-h" ]]; then
+    ProgUsage
+    exit
+# Select the file by file number
+elif [[ ${arg1} -ge 0 ]] && [[ ${arg1} -lt ${fileCount} ]]; then
+    targetFile=${fileList[$arg1]}
 else
-    printf "%s\n" "++ ERROR: <journal specifier> not known: $arg1"
+    printf "%s\n" "++ ERROR: <journal file> not known: $arg1"
     printf "%s\n"
     ProgUsage
     exit 1      # Error = 1
@@ -126,9 +158,10 @@ if [ "$debug" == "TRUE" ]; then
     printf "%s\n" "++ Target file ...................... $targetFile"
     printf "%s\n" "++ Here's where we would start vi on the target file, but we're in debug mode."
 else
-    vi "$targetFile"
+    vi "$targetFile"   #orig
 fi
 
+PrintProgVer
 
 # ----------------------------------------
 # ----------------------------------------
@@ -136,23 +169,43 @@ fi
 # ----------------------------------------
 # ----------------------------------------
 
-
 -------------
 -- ToDo    --
 -------------
 Want to re-architect file locations. Desires
 - Keep it on a network available drive
-- Retire Dropbox use and use the "sync" service
 - All <filename>.txt should be in the Sync/journal/<name> hierarchy
 - All journal file names should be <name>_journal_file.txt
 - These changes make it easier to find the files in a predictable location
   instead of maintaining a file lookup mechanism. Plan to make those changes
   when I re-implement in python.
 
-
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2022-12-02
+ journal, version 2.2
+----------------------------------------------------------------------
+Big rewrite, refactoring.
+Now reads files listed in the $JOURNALFILES env var.
+
+Syntax changed to 
+journal <number> | -h 
+where number selects the file.
+Got rid of the hardcoded file seclection.
+
+----------------------------------------------------------------------
+ 2021-09-20
+ journal, version 2.1
+----------------------------------------------------------------------
+Added a "pda" option.
+
+----------------------------------------------------------------------
+ 2021-02-14
+ journal, version 1.4
+----------------------------------------------------------------------
 
 ----------------------------------------------------------------------
  2020-03-01
@@ -160,7 +213,6 @@ Want to re-architect file locations. Desires
 ----------------------------------------------------------------------
 - Moved 4 files into ~/Sync/doc/journal structure.
   Some were still in DropBox.
-
 
 ----------------------------------------------------------------------
  2020-03-01
