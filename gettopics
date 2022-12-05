@@ -1,8 +1,0 @@
-#! /bin/bash
-
-echo
-echo
-echo
-echo
-grep -e "Topic::" -e "^D::" /Users/thedrub/sync_synology/doc/journal/work/journal_work.txt | head -15
-#grep -in Action:: /Users/thedrub/sync_synology/doc/journal/work/journal_work.txt | grep -iv Done:
