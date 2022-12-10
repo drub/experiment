@@ -6,21 +6,21 @@
 #Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="2.2"
+readonly progVer="3.0"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
-readonly arg1=$1
 readonly argList=$*
 
 # ----------------------------------------
 # File locations
 # ----------------------------------------
-# Now read from the $JOURNALPATH env variable
+# Read file names from the $JOURNALPATH env variable
 
 # ----------------------------------------
 # Globals
 # ----------------------------------------
+arg1=$1
 debug="TRUE"    #debug
 debug="FALSE"   #debug
 
@@ -33,38 +33,36 @@ for i in $libList; do
     if [[ -r $i ]]; then    # Does it exist?
         . $i                # Source the library file.
     else
-        printf "%s\n" "ERROR: Library file not found. Could not source library file."
-        printf "%s\n" "File: $i"
-        exit
+        printf "
+++ ERROR: Library file not found. Could not source library file." >&2
+        printf "File: $i" >&2
+        exit 9  # Error 9
     fi
 done
 
 # ----------------------------------------
   function ProgUsage () {
 # ----------------------------------------
-  printf "\
+  printf "
 Name
   $progName [ <file number> ] | -h
 
-Where
-  <journal file> is one of
-     0: work      : Work stuff <default>
-     1: personal  : Personal topics and reflections
-     2: grat      : Gratitude journal
-     3: agile     : Agile related stuff
-     4: invest    : Investments. Was previosly in \"personal\" file
-     5: job       : Job search
-     6: Rotary    : Rotary
-     7: PDA       : Product Delivery Alchemy
-     8: divorce   : Open a file on my personal DropBox
-
   If no <file number> is provided, defaults to 0.
+
+Where
+  <file number> is one of
+
+"
+
+PrintEnvFileNames
+
+printf "\
 
 Journal files paths are stored in an environment variable \$JOURNALPATH
 
 Files
 "
-  PrintEnvFileNames
+  #PrintEnvFileNames
 
 }   # function
 
@@ -72,10 +70,12 @@ Files
   function PrintEnvFileNames () {
 # ----------------------------------------
 # Print each file name in the env variable.
+# Show the index value of each file so it can be selected based on index value.
 
     loopCounter=0
     for fname in ${fileList[@]}; do
-        printf "%s\n" "    ${fileList[$loopCounter]}"
+        #printf "%s\n" "    ${fileList[$loopCounter]}"
+        printf "  %2.1d ... %s\n" "${loopCounter}" "${fileList[$loopCounter]}"
         ((loopCounter++))
     done    # for
  
@@ -96,10 +96,9 @@ ver. $progVer
     # Check to assure the search path environment variable is set.
     # If not set, then exit
     if [[  -z ${JOURNALPATH:-} ]]; then
-        printf "%s\n" "\
+        printf "%s\n" "
 ERROR: Environment variable not set.
-       The CONTACTSPATH variable must contain a list of files.
-"
+       The CONTACTSPATH variable must contain a list of files.\n" >&2
        exit 1
    elif [ "$debug" == "TRUE" ]; then
         printf "%s\n" "++ JOURNALPATH ...................... $JOURNALPATH"
@@ -111,9 +110,13 @@ ERROR: Environment variable not set.
 
     # Identify how many files are listed in the $JOURNALPATH
     fileCount=${#fileList[@]}
+
+    # maxIndex is used for error messages. Index starts from zero, of course.
+    ((maxIndex=$fileCount-1))
     
     if [ "$debug" == "TRUE" ]; then
         printf "%s\n" "++ File count ....................... $fileCount"
+        printf "%s\n" "++ maxIndex ......................... $maxIndex"
     fi
 
 }   #function
@@ -124,39 +127,89 @@ ERROR: Environment variable not set.
 # ----------------------------------------
 # ----------------------------------------
 
-#debug="TRUE"
 if [ "$debug" == "TRUE" ]; then
     DashLine $dashLineLength "-"
-    printf "%s\n" "++ arg1 ............................. $arg1"
-    printf "%s\n" "++ arg list ......................... $argList"
+    printf "%s\n" "
+++ arg1 ............................. $arg1
+++ arg list ......................... $argList\n"
 fi
-#debug="FALSE"
 
 Initialize
 
-if [[ ${arg1} = "-h" ]]; then
+if [[ ${arg1} == "-h" ]]; then
     ProgUsage
-    exit
-# Select the file by file number
-elif [[ ${arg1} -ge 0 ]] && [[ ${arg1} -lt ${fileCount} ]]; then
-    targetFile=${fileList[$arg1]}
-else
-    printf "%s\n" "++ ERROR: <journal file> not known: $arg1"
-    printf "%s\n"
-    ProgUsage
-    exit 1      # Error = 1
+    exit 0  # No error
+
+# Test if an empty string. Set to the default value of zero.
+elif [ -z "${arg1}" ]; then
+    # Set the default, <File number> = zero
+    arg1=0
+    if [ "$debug" == "TRUE" ]; then
+        printf "%s\n" "
+++ Argument is empty string ... Set arg1 to 0"
+    fi
 fi
 
+
+# Test if the index argument is numeric
+regex='^[0-9]+$'
+if  [[ "$arg1" =~ $regex ]] ; then
+
+    # arg1 is a number
+    if [ "$debug" == "TRUE" ]; then
+        printf "
+++ arg1 is a number"
+"++ arg1 ............................. $arg1"
+    fi
+
+    # Test that the index argument is in range
+    if [[ ${arg1} -ge 0 ]] && [[ ${arg1} -lt ${fileCount} ]]; then
+        # A valid file index was provided
+
+        targetFile=${fileList[$arg1]}
+
+        if [ "$debug" == "TRUE" ]; then
+            printf "%s\n" "
+++ targetFile ....................... $targetFile"
+        fi
+
+    else
+        printf "%s\n" "
+++ ERROR: <file number> out of range: $arg1
+          Value must be between 0 and ${maxIndex}\n" >&2
+
+        ProgUsage
+        exit 2      # Error = 2
+    fi
+fi
+
+#set -x  #debug
+
+# Check that the targetFile exists
+if [ ! -f "$targetFile" ]; then
+    printf "
+++ ERROR: Journal file does not exist.
+          <file number>: ${arg1}
+          File: $targetFile\n" >&2
+
+    exit 3      # Error = 3
+fi
+    
 if [[ ! -w $targetFile ]]; then
-    printf "%s\n" "++ ERROR: Cannot open journal file."
-    printf "%s\n" "   File: $targetFile"
-    exit 2      # Error = 2
+    printf "%s\n" "
+++ ERROR: Cannot write to the journal file.
+          The file may not have write permission set.
+          File: $targetFile\n" >&2
+    exit 4      # Error = 4
 fi
     
 
 if [ "$debug" == "TRUE" ]; then
-    printf "%s\n" "++ Target file ...................... $targetFile"
-    printf "%s\n" "++ Here's where we would start vi on the target file, but we're in debug mode."
+    printf "
+++ Target file ...................... $targetFile
+++ Here is vi would start on the target file, but debug mode is set.\n"
+    exit
+
 else
     vi "$targetFile"   #orig
 fi
@@ -174,15 +227,26 @@ PrintProgVer
 -------------
 Want to re-architect file locations. Desires
 - Keep it on a network available drive
-- All <filename>.txt should be in the Sync/journal/<name> hierarchy
-- All journal file names should be <name>_journal_file.txt
-- These changes make it easier to find the files in a predictable location
-  instead of maintaining a file lookup mechanism. Plan to make those changes
-  when I re-implement in python.
+- Plan to re-implement in python.
 
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2022-12-09
+ journal, version 3.0
+----------------------------------------------------------------------
+Lots and lots of refactoring. Surprised it previously worked!!!
+
+Now the files listed in $JOURNALFILES are displayed in ProgUsage
+The user selects files based on index value.
+Syntax is new
+
+Name
+  journal [ <file number> ] | -h
+
+  If no <file number> is provided, defaults to 0.
 
 ----------------------------------------------------------------------
  2022-12-02
