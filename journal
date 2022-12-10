@@ -6,7 +6,7 @@
 #Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="3.0"
+readonly progVer="3.1"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
@@ -58,10 +58,7 @@ PrintEnvFileNames
 
 printf "\
 
-Journal files paths are stored in an environment variable \$JOURNALPATH
-
-Files
-"
+Journal files paths are stored in an environment variable \$JOURNALPATH "
   #PrintEnvFileNames
 
 }   # function
@@ -85,9 +82,8 @@ Files
 # ----------------------------------------
   function PrintProgVer () {
 # ----------------------------------------
-    printf "%s\n" "
-ver. $progVer
-"
+    printf "\n%s\n" "
+ver. $progVer"
 }   # function
 
 # ----------------------------------------
@@ -138,6 +134,7 @@ Initialize
 
 if [[ ${arg1} == "-h" ]]; then
     ProgUsage
+    PrintProgVer
     exit 0  # No error
 
 # Test if an empty string. Set to the default value of zero.
@@ -222,16 +219,26 @@ PrintProgVer
 # ----------------------------------------
 # ----------------------------------------
 
--------------
--- ToDo    --
--------------
-Want to re-architect file locations. Desires
-- Keep it on a network available drive
-- Plan to re-implement in python.
+----------------------
+-- ToDo todo TODO   --
+----------------------
+- Re-implement in python.
+
+- Instead of diplaying file path, display a description of each journal file.
+  The journal file first line syntax like "Description: <description>"
+  Then, display <fileNumber> : <description> in progUsage
+  That should be a more friendly message
 
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2022-12-10
+ journal, version 3.1
+----------------------------------------------------------------------
+Minor correction to ProgUsage.
+Display the progVer at the end.
 
 ----------------------------------------------------------------------
  2022-12-09
