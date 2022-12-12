@@ -6,7 +6,7 @@
 #Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="3.1"
+readonly progVer="4.0"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
@@ -58,7 +58,8 @@ PrintEnvFileNames
 
 printf "\
 
-Journal files paths are stored in an environment variable \$JOURNALPATH "
+Journal files paths are stored in an environment variable \$JOURNALPATH
+The journal file 1st line should be \"Description: <description>\""
   #PrintEnvFileNames
 
 }   # function
@@ -71,8 +72,19 @@ Journal files paths are stored in an environment variable \$JOURNALPATH "
 
     loopCounter=0
     for fname in ${fileList[@]}; do
-        #printf "%s\n" "    ${fileList[$loopCounter]}"
-        printf "  %2.1d ... %s\n" "${loopCounter}" "${fileList[$loopCounter]}"
+
+        IFS=":"
+        read -r firstPart fileDescription < "${fileList[$loopCounter]}"
+        IFS="$origIFS"
+
+        # Print a number followed by a description from the first line in the file.
+        printf "  %2.1d ... %s\n" "${loopCounter}" "${fileDescription}"
+
+        if [ "$debug" == "TRUE" ]; then
+            # Print a number followed by the file path
+            printf "  %2.1d ... %s\n" "${loopCounter}" "${fileList[$loopCounter]}"
+        fi
+
         ((loopCounter++))
     done    # for
  
@@ -224,14 +236,18 @@ PrintProgVer
 ----------------------
 - Re-implement in python.
 
-- Instead of diplaying file path, display a description of each journal file.
-  The journal file first line syntax like "Description: <description>"
-  Then, display <fileNumber> : <description> in progUsage
-  That should be a more friendly message
-
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2022-12-11
+ journal, version 4.0
+----------------------------------------------------------------------
+- Instead of diplaying file path, display a description of each journal file.
+  The journal file first line syntax "Description: <description>"
+  Then, display <fileNumber> : <description> in progUsage
+  That should be a more friendly message
 
 ----------------------------------------------------------------------
  2022-12-10
