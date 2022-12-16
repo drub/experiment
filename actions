@@ -12,11 +12,16 @@ grep -in Action:: /Users/thedrub/sync_synology/doc/journal/journal_personal.txt 
 
 echo
 echo
-echo "++++ PDA file: journal_personal.txt ++++++++++++++++++++++++"
+echo "++++ Personal file: journal_investments.txt ++++++++++++++++++++++++"
+grep -in Action:: /Users/thedrub/sync_synology/doc/journal/journal_investments.txt | grep -iv Done:
+
+echo
+echo
+echo "++++ PDA file: journal_pda.txt ++++++++++++++++++++++++"
 grep -in Action:: /Users/thedrub/sync_synology/doc/journal/journal_pda.txt | grep -iv Done:
 
 echo
 echo
-echo "++++ COD file: journal_personal.txt ++++++++++++++++++++++++"
+echo "++++ COD file: journal_cod.txt ++++++++++++++++++++++++"
 grep -in Action:: /Users/thedrub/sync_synology/doc/journal/journal_cod.txt | grep -iv Done:
 
