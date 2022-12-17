@@ -6,7 +6,7 @@
 #Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="4.0"
+readonly progVer="4.1"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
@@ -59,7 +59,7 @@ PrintEnvFileNames
 printf "\
 
 Journal files paths are stored in an environment variable \$JOURNALPATH
-The journal file 1st line should be \"Description: <description>\""
+The journal file 1st line syntax: \"Description: <description>\""
   #PrintEnvFileNames
 
 }   # function
@@ -79,10 +79,11 @@ The journal file 1st line should be \"Description: <description>\""
 
         # Print a number followed by a description from the first line in the file.
         printf "  %2.1d ... %s\n" "${loopCounter}" "${fileDescription}"
+        printf "          %s\n" "${fileList[$loopCounter]}"
 
         if [ "$debug" == "TRUE" ]; then
             # Print a number followed by the file path
-            printf "  %2.1d ... %s\n" "${loopCounter}" "${fileList[$loopCounter]}"
+            printf "++ [%2.1d] ... %s\n" "${loopCounter}" "${fileList[$loopCounter]}"
         fi
 
         ((loopCounter++))
@@ -239,6 +240,14 @@ PrintProgVer
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2022-12-17
+ journal, version 4.1
+----------------------------------------------------------------------
+- Trying out adding the file path, in addition to the description, in the
+  ProgUsage output. Experiment to see if that is helpful.
+- Minor adjustment in the ProgUsage output.
 
 ----------------------------------------------------------------------
  2022-12-11
