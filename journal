@@ -6,7 +6,7 @@
 #Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="4.1"
+readonly progVer="4.2"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
@@ -73,17 +73,26 @@ The journal file 1st line syntax: \"Description: <description>\""
     loopCounter=0
     for fname in ${fileList[@]}; do
 
-        IFS=":"
-        read -r firstPart fileDescription < "${fileList[$loopCounter]}"
-        IFS="$origIFS"
+        # Before trying to read from file check that it exists
+        if [ -f $fname ]; then
+            IFS=":"
+            read -r firstPart fileDescription < "${fileList[$loopCounter]}"
+            IFS="$origIFS"
 
-        # Print a number followed by a description from the first line in the file.
-        printf "  %2.1d ... %s\n" "${loopCounter}" "${fileDescription}"
-        printf "          %s\n" "${fileList[$loopCounter]}"
+            # Print loopCounter followed by a description from the
+            # first line in the file.
+            printf "  %2.1d ... %s\n" "${loopCounter}" "${fileDescription}"
+            printf "          %s\n" "${fname}"
+        else
+            printf "  %2.1d ...  %s\n" "${loopCounter}" "\
+ERROR: File listed in \$JOURNALPATH does not exist 
+         ${fname}"
+        fi
+
 
         if [ "$debug" == "TRUE" ]; then
             # Print a number followed by the file path
-            printf "++ [%2.1d] ... %s\n" "${loopCounter}" "${fileList[$loopCounter]}"
+            printf "++ [%2.1d] ... %s\n" "${loopCounter}" "${fname}"
         fi
 
         ((loopCounter++))
@@ -115,7 +124,7 @@ ERROR: Environment variable not set.
 
     # Put the colon separated ENV var into an array
     # Convert the JOURNALPATH string into the array fileList.
-    fileList=($(echo "$JOURNALPATH" | tr ':' '\n'))
+    fileList=($(echo "${JOURNALPATH}" | tr ':' '\n'))
 
     # Identify how many files are listed in the $JOURNALPATH
     fileCount=${#fileList[@]}
@@ -240,6 +249,13 @@ PrintProgVer
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2022-12-17
+ journal, version 4.2
+----------------------------------------------------------------------
+- Added a test before trying to read the first line <description>
+  Now an ERROR is displayed if the file does not exist.
 
 ----------------------------------------------------------------------
  2022-12-17
