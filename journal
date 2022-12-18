@@ -6,7 +6,7 @@
 #Globals Constants
 # ----------------------------------------
 readonly origIFS=$IFS
-readonly progVer="4.2"
+readonly progVer="4.3"
 readonly progName=$(basename $0)
 readonly dashLineLength=60
 readonly uninitialized="UNINITIALIZED"
@@ -58,8 +58,11 @@ PrintEnvFileNames
 
 printf "\
 
-Journal files paths are stored in an environment variable \$JOURNALPATH
-The journal file 1st line syntax: \"Description: <description>\""
+Notes
+
+- Journal file 1st line syntax: \"Description: <description>\"
+- Journal files paths are stored in an environment variable \$JOURNALPATH
+- The file paths cannot include a space. (for now)"
   #PrintEnvFileNames
 
 }   # function
@@ -68,27 +71,30 @@ The journal file 1st line syntax: \"Description: <description>\""
   function PrintEnvFileNames () {
 # ----------------------------------------
 # Print each file name in the env variable.
-# Show the index value of each file so it can be selected based on index value.
+# Show the index value of each file so user can select the index value.
 
     loopCounter=0
     for fname in ${fileList[@]}; do
 
         # Before trying to read from file check that it exists
         if [ -f $fname ]; then
+
+            # Read the first line. Contains file description.
             IFS=":"
-            read -r firstPart fileDescription < "${fileList[$loopCounter]}"
+            read -r firstPart fileDescription < "${fname}"
             IFS="$origIFS"
 
-            # Print loopCounter followed by a description from the
+            # Print loopCounter followed by the description from the
             # first line in the file.
-            printf "  %2.1d ... %s\n" "${loopCounter}" "${fileDescription}"
+            printf "[%2.1d] %s\n" "${loopCounter}" "${fileDescription}"
             printf "          %s\n" "${fname}"
+
         else
+            # File does not exist.
             printf "  %2.1d ...  %s\n" "${loopCounter}" "\
 ERROR: File listed in \$JOURNALPATH does not exist 
          ${fname}"
         fi
-
 
         if [ "$debug" == "TRUE" ]; then
             # Print a number followed by the file path
@@ -124,7 +130,21 @@ ERROR: Environment variable not set.
 
     # Put the colon separated ENV var into an array
     # Convert the JOURNALPATH string into the array fileList.
+    # Hex A = <newline>
     fileList=($(echo "${JOURNALPATH}" | tr ':' '\n'))
+    #fileList=($(echo "${JOURNALPATH}" | awk '{gsub(/:/,"<<---->>\n")}1'))
+    #fileList="$(echo "${JOURNALPATH}" | awk '{gsub(/:/,"\xA")}1')"
+    #fileList=$(echo "${JOURNALPATH}" | awk '{gsub(/:/,"\xA")}1')
+
+    #echo "++ ${fileList[@]}" #debug
+    #echo "" #debug
+
+    #i=0 #debug
+    #for f in "${fileList[@]}"; do #debug
+    #    echo "  ++ ${f}"    #debug
+    #    ((i++)) #debug
+    #done    #debug
+    #exit    #debug
 
     # Identify how many files are listed in the $JOURNALPATH
     fileCount=${#fileList[@]}
@@ -177,8 +197,8 @@ if  [[ "$arg1" =~ $regex ]] ; then
     # arg1 is a number
     if [ "$debug" == "TRUE" ]; then
         printf "
-++ arg1 is a number"
-"++ arg1 ............................. $arg1"
+++ arg1 is a number
+++ arg1 ............................. $arg1"
     fi
 
     # Test that the index argument is in range
@@ -226,7 +246,7 @@ fi
 if [ "$debug" == "TRUE" ]; then
     printf "
 ++ Target file ...................... $targetFile
-++ Here is vi would start on the target file, but debug mode is set.\n"
+++ Here is where vi would start on the target file, but debug mode is set.\n"
     exit
 
 else
@@ -245,10 +265,19 @@ PrintProgVer
 -- ToDo todo TODO   --
 ----------------------
 - Re-implement in python.
+- Figure out how to allow spaces in file names
 
 -------------
 -- History --
 -------------
+
+----------------------------------------------------------------------
+ 2022-12-17
+ journal, version 4.3
+----------------------------------------------------------------------
+- Update ProgUsage
+- Experiment: Try to allow spaces in file names. No luck, so far.
+- Format changes to PrintEnvFileNames
 
 ----------------------------------------------------------------------
  2022-12-17
