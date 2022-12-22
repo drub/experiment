@@ -22,8 +22,8 @@ debug = False
 
 PROG_CONFIG = \
     {"name"          : os.path.basename(sys.argv[0]), \
-     "maj_ver"        : "1", \
-     "min_ver"        : "1", \
+     "maj_ver"        : "2", \
+     "min_ver"        : "0", \
     }
 PROG_CONFIG["ver"] = PROG_CONFIG["maj_ver"] + "." + PROG_CONFIG["min_ver"]
 
@@ -44,7 +44,7 @@ ln_ptr = 0    # The "contents" list will index from 0
 
 
 # --------------------------------------------------
-def Process_File (line_ptr, days) :
+def Process_File (line_ptr, days, verboseHeaders) :
 # --------------------------------------------------
 
     if debug :
@@ -52,7 +52,8 @@ def Process_File (line_ptr, days) :
         print(f"++++ {funcName} ++++++++++++++++++++")
         print("++ line_ptr ............. " + str(line_ptr))
         print("++ days ................. " + str(days))
-        print("++")
+        print("++ verboseHeaders ....... " + str(verboseHeaders))
+
         content[line_ptr] = content[line_ptr].rstrip('\r\n')
 
     day_counter = 1
@@ -63,8 +64,9 @@ def Process_File (line_ptr, days) :
         # When displaying the D:: record, use [line_ptr+1] value to display the
         # line number. "content" is indexed from 0. 
         content[line_ptr] = content[line_ptr].rstrip('\r\n')
-        print ("-------- [" + str(line_ptr+1) + "] ----------- " + \
-                content[line_ptr]) 
+        print ("======== [" + str(line_ptr+1) + \
+            "] ================================== " + \
+            content[line_ptr]) 
 
         while True :
             # Loop break when a D:: record is found.
@@ -81,7 +83,22 @@ def Process_File (line_ptr, days) :
                 # Found a RE_TOPIC record.
                 # Replace "::" with ":" in the Topic:: record.
                 content[line_ptr] = content[line_ptr].replace("::",":")
-                print ("- " + content[line_ptr])
+
+                # Print the "Topic::" line
+                if verboseHeaders :
+                    print ("[" + str(line_ptr) + "] " + content[line_ptr])
+                else :
+                    print ("- " + content[line_ptr])
+
+                if verboseHeaders :
+                    # For a "full" report, print the next 3 lines
+                    # "Host::", "Inernal Staff", and "Client Staff::" lines
+                    for counter in  range(1, 4) :
+                        line_ptr += 1   # Move to the next line.
+                        content[line_ptr] = content[line_ptr].rstrip('\r\n')
+                        content[line_ptr] = content[line_ptr].replace("::",":")
+                        print ("[" + str(line_ptr) + "] " + content[line_ptr])
+                    print(f"----------------------------------------------------------------------")
 
                 if debug :
                     print ("Topic [" + str(line_ptr + 1) + "]: - " + content[line_ptr])
@@ -115,34 +132,38 @@ def PrintExitMesg () :
 # Main MAIN main
 # ----------------------------------------------------------------------
 
-
 # Initialize the options parser
 parser = OptionParser()
 parser.add_option("-c", type="int", dest="day_count", \
-                 help = "Display records for this many days.")
-"""
+                 help = "Display records for this many days")
+
 # Could not get this to work. Grrrrr. Irritating.
-parser.add_option("-d", action="store_true", dest="debug", \
-                 help = "Set debug mode")
-parser.set_defaults(debug = False)
-"""
+parser.add_option('-d', action ='store_true', dest='debug', \
+                 help = 'Set debug mode')
+#parser.set_defaults(debug = False)
+
+parser.add_option('-f', action = 'store_true', default = False,\
+                    dest = "fullHeaders",
+                    help = 'Display full headers')
 
 # Collect any supplied options.
-(opts, args) = parser.parse_args()
+(options, args) = parser.parse_args()
+
+debug = options.debug
 
 # Load the file contents
 FD_INPUT = open(INPUT_FILE, 'r')
 content = FD_INPUT.readlines()
 
 if debug :
-    print("++ options ..." + str(opts))
-    print()
+    print("++ options ............." + str(options))
 
-if opts.day_count == None :
-    opts.day_count = 1
+# Set default number of days to one
+if options.day_count == None :
+    options.day_count = 1
 
 if debug :
-    print("++ Display records for " + str(opts.day_count) + " days.")
+    print("++ Display records for " + str(options.day_count) + " days.")
 
 # Get to the first D:: record. Skip the file's header section.
 while True :
@@ -153,9 +174,12 @@ while True :
 # Any initial lines in the input file have been skipped. There could be an
 # arbitrary number of lines preceeding the first day record.
 
-Process_File(ln_ptr, opts.day_count)
+if debug :
+    print("++ options ............." + str(options))
 
-PrintExitMesg()
+Process_File(ln_ptr, options.day_count, options.fullHeaders)
+
+#PrintExitMesg() # Don't want extra output. Shows up in files.
 
 exit()
 
@@ -163,12 +187,18 @@ exit()
 # ----------------------------------------------------------------------
 # TODO ToDo todo
 # ----------------------------------------------------------------------
-- Add a -f option to get the full header for events
 
 
 # ----------------------------------------------------------------------
 # History
 # ----------------------------------------------------------------------
+
+# --------------------------------------------------
+# topics, Ver: 2.0
+# 2022-12-21
+# --------------------------------------------------
+- Added the -f option for the full header.
+- Added the -d option for debug output
 
 # --------------------------------------------------
 # topics, Ver: 1.1
