@@ -6,39 +6,50 @@
 import re
 import os
 import sys
-import pandas as pd
 from optparse import OptionParser
 
 # ----------------------------------------------------------------------
 # Files
 # ----------------------------------------------------------------------
-inputFile = "/Users/thedrub/sync_synology/doc/journal/work/journal_work.txt"
+INPUT_FILE = "/Users/thedrub/sync_synology/doc/journal/work/journal_work.txt"
 
 # ----------------------------------------------------------------------
 # Constants
 # ----------------------------------------------------------------------
-prog_config = \
+# "debug" is a debugging tool. Not really constant.
+debug = True
+debug = False
+
+PROG_CONFIG = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "1", \
-     "min_ver"        : "0", \
+     "min_ver"        : "1", \
     }
-prog_config["ver"] = prog_config["maj_ver"] + "." + prog_config["min_ver"]
+PROG_CONFIG["ver"] = PROG_CONFIG["maj_ver"] + "." + PROG_CONFIG["min_ver"]
 
-pattern_start_day = "^D::"
-pattern_topic     = "^Topic::"
+if debug :
+    print(f"++ Prog Name ...................... {PROG_CONFIG['name']}")
+    print(f"++ Prog maj ver ................... {PROG_CONFIG['maj_ver']}")
+    print(f"++ Prog min ver ................... {PROG_CONFIG['min_ver']}")
+    print(f"++ Prog ver ....................... {PROG_CONFIG['ver']}")
 
+# The Regular Expressions (RE) for parsing
+RE_START_DAY = "^D::"
+RE_TOPIC     = "^Topic::"
 
 # ----------------------------------------------------------------------
-# Initializations
+# Globals
 # ----------------------------------------------------------------------
 ln_ptr = 0    # The "contents" list will index from 0
+
 
 # --------------------------------------------------
 def Process_File (line_ptr, days) :
 # --------------------------------------------------
 
     if debug :
-        print("++++ Entered Process_File ....")
+        funcName = sys._getframe().f_code.co_name
+        print(f"++++ {funcName} ++++++++++++++++++++")
         print("++ line_ptr ............. " + str(line_ptr))
         print("++ days ................. " + str(days))
         print("++")
@@ -63,40 +74,47 @@ def Process_File (line_ptr, days) :
             # Strip trailing EOL from current line.
             content[line_ptr] = content[line_ptr].rstrip('\r\n')
 
-            #if debug :
-            #    print("++ line_ptr ............. " + str(line_ptr))
+            if debug :
+                print("++ line_ptr ............. " + str(line_ptr))
 
-            if re.search(pattern_topic, content[line_ptr]) :
-                # Found a pattern_topic record.
+            if re.search(RE_TOPIC, content[line_ptr]) :
+                # Found a RE_TOPIC record.
                 # Replace "::" with ":" in the Topic:: record.
                 content[line_ptr] = content[line_ptr].replace("::",":")
                 print ("- " + content[line_ptr])
 
-                #if debug :
-                #    print ("Topic [" + str(line_ptr + 1) + "]: - " + content[line_ptr])
+                if debug :
+                    print ("Topic [" + str(line_ptr + 1) + "]: - " + content[line_ptr])
 
-            if re.search(pattern_start_day, content[line_ptr]) :
-                # Found a pattern_start_day record.
+            if re.search(RE_START_DAY, content[line_ptr]) :
+                # Found a RE_START_DAY record.
                 # Exit this inner while loop that scans line-by-line.
                 if debug :
                     print ("++ D:: match [" + str(line_ptr+1) + "]: " + content[line_ptr])
 
                 day_counter += 1    # A record was found.
-                break   # End while when a pattern_start_day is found
+                break   # End while when a RE_START_DAY is found
 
                 # Continue with  lines within this D:: interval
 
         # End for i in range
 
     return()    # End def
+
 # --------------------------------------------------
+def PrintExitMesg () :
+# --------------------------------------------------
+    funcName = sys._getframe().f_code.co_name
+    if debug :
+        print(f"++++ {funcName} ++++++++++++++++++++")
+
+    print(f"{PROG_CONFIG['name']}, v{PROG_CONFIG['ver']}")
+
 
 # ----------------------------------------------------------------------
 # Main MAIN main
 # ----------------------------------------------------------------------
 
-debug = True
-debug = False
 
 # Initialize the options parser
 parser = OptionParser()
@@ -113,8 +131,8 @@ parser.set_defaults(debug = False)
 (opts, args) = parser.parse_args()
 
 # Load the file contents
-in_fd = open(inputFile, 'r')
-content = in_fd.readlines()
+FD_INPUT = open(INPUT_FILE, 'r')
+content = FD_INPUT.readlines()
 
 if debug :
     print("++ options ..." + str(opts))
@@ -128,7 +146,7 @@ if debug :
 
 # Get to the first D:: record. Skip the file's header section.
 while True :
-    if re.search(pattern_start_day, content[ln_ptr]) : 
+    if re.search(RE_START_DAY, content[ln_ptr]) : 
         break
     ln_ptr += 1
 
@@ -136,18 +154,30 @@ while True :
 # arbitrary number of lines preceeding the first day record.
 
 Process_File(ln_ptr, opts.day_count)
+
+PrintExitMesg()
+
 exit()
 
 '''
 # ----------------------------------------------------------------------
 # TODO ToDo todo
 # ----------------------------------------------------------------------
+- Add a -f option to get the full header for events
 
-- 
 
 # ----------------------------------------------------------------------
 # History
 # ----------------------------------------------------------------------
+
+# --------------------------------------------------
+# topics, Ver: 1.1
+# 2022-12-21
+# --------------------------------------------------
+- Change constants to the all caps convention
+- Add PrintExitMesg
+- Clean out some cruft
+- Add some debug statements
 
 # --------------------------------------------------
 # topics, Ver: 1.0
