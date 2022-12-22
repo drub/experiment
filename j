@@ -13,12 +13,12 @@ import subprocess
 # ----------------------------------------------------------------------
 debug = True
 debug = False
-ENV_VAR_Name = "JOURNALPATH"
+ENV_VAR_NAME = "JOURNALPATH"
 
 PROG_CONFIG = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "1", \
-     "min_ver"        : "0", \
+     "min_ver"        : "1", \
     }
 PROG_CONFIG["ver"] = PROG_CONFIG["maj_ver"] + "." + PROG_CONFIG["min_ver"]
 
@@ -33,8 +33,9 @@ def Get_Input_Files(environmentVar):
 
     if environmentVar in os.environ:
         # The ENV variable exists. Return the file list.
-        #print("++ Name: " + environmentVar)
-        #print("Contents: " + os.environ[environmentVar]) #debug
+        if debug :
+            print("++ Name: " + environmentVar)
+            print("Contents: " + os.environ[environmentVar])
         return os.environ[environmentVar]
     else:
         print("Error: ")
@@ -62,18 +63,25 @@ def Print_File_Names(fList):
 def ProgUsage(fList) :
 # ----------------------------------------
     funcName = sys._getframe().f_code.co_name
+    progName = PROG_CONFIG['name']
+
     if debug :
         print(f"++++ {funcName} ++++++++++++++++++++")
+        print(f"++ progName .......... {progName}")
 
-    print(
-'''
-Name
-  Usage: j [h] | [-h] | [<journal Number>]
+    print(f"Name")
+    print(f"    {progName} - Edit one of the journal files")
+    print(f"")
+    print(f"Synopsis")
+    print(f"    {progName}: j [h] | [-h] | [<journal number>]")
+    print(f"    <journal number> is one of the files listed below.")
+    print(f"")
+    print(f"Description")
+    print(f"    A utility that helps access one of the journal files.")
+    print(f"    The files are listed in an environment variable: {ENV_VAR_NAME}")
+    print(f"")
+    print(f"    Journal files:")
 
-Where 
-  <journal Number> is one of
-'''
-)
     Print_File_Names(fList)
     print(f"")
     #print(f"{PROG_CONFIG["ver"]}")
@@ -95,7 +103,7 @@ def GetFileDescription(file) :
     description =  line.split(":")
 
     if debug :
-        print ("++ Description ....... " + str(description)) #debug
+        print ("++ Description ....... " + str(description))
     return(description[1])
 
 # ----------------------------------------
@@ -108,7 +116,7 @@ def ParseUserOptions () :
     # If no arguments, set to the default, 0
     if len(sys.argv) == 1 :
         if debug :
-            print ("++ No arguments. Set journalNumber, arg1 to 0.")   #debug
+            print ("++ No arguments. Set journalNumber, arg1 to 0.")
         # When no argument set the default value, 0
         journalNumber = 0
         arg1 = 0
@@ -132,7 +140,7 @@ def ParseUserOptions () :
     # The number of files contained in the env variable
     journalCount = len(fileList)
     if debug :
-        print(f"++ journalCount ...... {journalCount}") #debug
+        print(f"++ journalCount ...... {journalCount}")
 
     fileNo = arg1
     if debug :
@@ -148,7 +156,7 @@ def ParseUserOptions () :
         sys.exit(1)
     else :
         if debug :
-            print (f"++ journalNumber is in range.") #debug
+            print (f"++ journalNumber is in range.")
 
     return(fileNo)
 
@@ -156,7 +164,7 @@ def ParseUserOptions () :
 # Main MAIN main
 # ----------------------------------------------------------------------
 
-envVarContents = Get_Input_Files(ENV_VAR_Name)
+envVarContents = Get_Input_Files(ENV_VAR_NAME)
 # Parse the env variable contents
 fileList = envVarContents.split(":")
 
@@ -164,10 +172,9 @@ targetFileNo = ParseUserOptions()
 targetFile   = fileList[int(targetFileNo)]
 
 if debug :
-    print (f"++ targetFileNo ...... {str(targetFileNo)}") #debug
-    print (f"++ targetFile ........ {targetFile}")   #debug
+    print (f"++ targetFileNo ...... {str(targetFileNo)}")
+    print (f"++ targetFile ........ {targetFile}")
 
-#debug = True    #debug
 if exists(targetFile) :
     if debug :
         print (f"++++ Main ++++++++++++++++++++")
@@ -181,12 +188,13 @@ if exists(targetFile) :
 
 else :
     print(f"ERROR: File does not exist.")
-    print(f"       A file is named in the environment variable {ENV_VAR_Name}.")
+    print(f"       A file is named in the environment variable {ENV_VAR_NAME}.")
     print(f"       {targetFile}")
     sys.exit(1)
 
 sys.exit(0)
 
+'''
 # ----------------------------------------------------------------------
 # ToDo TODO todo
 # ----------------------------------------------------------------------
@@ -195,8 +203,13 @@ sys.exit(0)
 # ----------------------------------------------------------------------
 # History HISTORY history
 # ----------------------------------------------------------------------
-# 
-'''
+
+--------------------------------------------------
+j, Ver 1.1
+--------------------------------------------------
+- Better struct ProgUsage
+- Cleanup
+
 --------------------------------------------------
 j, Ver 1.0
 --------------------------------------------------
