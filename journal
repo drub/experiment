@@ -165,6 +165,20 @@ ERROR: Environment variable not set.
 # ----------------------------------------
 # ----------------------------------------
 
+    echo " 
+    ----------------------------------------------------------------------
+      Depricated Depricated Depricated Depricated Depricated Depricated 
+    ----------------------------------------------------------------------
+
+    This is the shell version.
+    Has been re-implemented in Python as \"j\" "
+
+    PrintProgVer
+    echo ""
+
+exit 0
+
+
 if [ "$debug" == "TRUE" ]; then
     DashLine $dashLineLength "-"
     printf "%s\n" "
