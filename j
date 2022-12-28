@@ -18,7 +18,7 @@ ENV_VAR_NAME = "JOURNALPATH"
 PROG_CONFIG = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "1", \
-     "min_ver"        : "1", \
+     "min_ver"        : "2", \
     }
 PROG_CONFIG["ver"] = PROG_CONFIG["maj_ver"] + "." + PROG_CONFIG["min_ver"]
 
@@ -164,35 +164,37 @@ def ParseUserOptions () :
 # Main MAIN main
 # ----------------------------------------------------------------------
 
-envVarContents = Get_Input_Files(ENV_VAR_NAME)
-# Parse the env variable contents
-fileList = envVarContents.split(":")
+if __name__ == '__main__' :
 
-targetFileNo = ParseUserOptions()
-targetFile   = fileList[int(targetFileNo)]
+    envVarContents = Get_Input_Files(ENV_VAR_NAME)
+    # Parse the env variable contents
+    fileList = envVarContents.split(":")
 
-if debug :
-    print (f"++ targetFileNo ...... {str(targetFileNo)}")
-    print (f"++ targetFile ........ {targetFile}")
+    targetFileNo = ParseUserOptions()
+    targetFile   = fileList[int(targetFileNo)]
 
-if exists(targetFile) :
     if debug :
-        print (f"++++ Main ++++++++++++++++++++")
-        print (f"++ targetFile ........ File exists")
-        print (f"++ targetFileNo ...... {targetFileNo}")
-        print (f"++ File .............. {targetFile}")
-        print("++ Start vi ... but we're in debug mode.")
-        sys.exit(0)
+        print (f"++ targetFileNo ...... {str(targetFileNo)}")
+        print (f"++ targetFile ........ {targetFile}")
 
-    subprocess.run(['vim', targetFile])
+    if exists(targetFile) :
+        if debug :
+            print (f"++++ Main ++++++++++++++++++++")
+            print (f"++ targetFile ........ File exists")
+            print (f"++ targetFileNo ...... {targetFileNo}")
+            print (f"++ File .............. {targetFile}")
+            print("++ Start vi ... but we're in debug mode.")
+            sys.exit(0)
 
-else :
-    print(f"ERROR: File does not exist.")
-    print(f"       A file is named in the environment variable {ENV_VAR_NAME}.")
-    print(f"       {targetFile}")
-    sys.exit(1)
+        subprocess.run(['vim', targetFile])
 
-sys.exit(0)
+    else :
+        print(f"ERROR: File does not exist.")
+        print(f"       A file is named in the environment variable {ENV_VAR_NAME}.")
+        print(f"       {targetFile}")
+        sys.exit(1)
+
+    sys.exit(0)
 
 '''
 # ----------------------------------------------------------------------
@@ -203,6 +205,13 @@ sys.exit(0)
 # ----------------------------------------------------------------------
 # History HISTORY history
 # ----------------------------------------------------------------------
+
+--------------------------------------------------
+j, Ver 1.2
+--------------------------------------------------
+- Added
+    if __name__ == '__main__' :
+- Updated indenting
 
 --------------------------------------------------
 j, Ver 1.1
