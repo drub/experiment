@@ -19,7 +19,7 @@ debug = False
 PROG_CONFIG = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "1", \
-     "min_ver"        : "0", \
+     "min_ver"        : "1", \
     }
 PROG_CONFIG["ver"] = PROG_CONFIG["maj_ver"] + "." + PROG_CONFIG["min_ver"]
 
@@ -38,79 +38,82 @@ HRS_FILE_PATH = HRS_FILE_DIR +  HRS_FILE
 # Main main MAIN
 # ----------------------------------------------------------------------
 
-# Create a new file name with the date as a prefix, like this
-# yyyy-mm-dd_<file_name>.txt
+if __name__ == '__main__' :
 
-# Get the current date, yyyy-mm-dd
-now = datetime.now()
-if debug :
-    print(f"++ now .......................... {now}")
+    # Create a new file name with the date as a prefix, like this
+    # yyyy-mm-dd_<file_name>.txt
 
-date =  now.strftime("%Y-%m-%d")
-if debug :
-    print(f"++ date ......................... {date}")
+    # Get the current date, yyyy-mm-dd
+    now = datetime.now()
+    if debug :
+        print(f"++ now .......................... {now}")
 
-# Prepend the date to the filename
-#targetFile = "test" + "_" + date + "_" + WORK_JOURNAL_FILE
-targetFile = date + "_" + WORK_JOURNAL_FILE
-if debug :
-    print(f"++ WORK_JOURNAL_FILE_DIR ........ {WORK_JOURNAL_FILE_DIR}")
-    print(f"++ targetFile ................... {targetFile}")
+    date =  now.strftime("%Y-%m-%d")
+    if debug :
+        print(f"++ date ......................... {date}")
 
-# Prepend the destination directory to the targetFile
-journalBackupDest = WORK_JOURNAL_FILE_DIR + BACKUP_DIR + targetFile
-if debug :
-    print(f"++ journalBackupDest ............ {journalBackupDest}")
+    # Prepend the date to the filename
+    #targetFile = "test" + "_" + date + "_" + WORK_JOURNAL_FILE
+    targetFile = date + "_" + WORK_JOURNAL_FILE
+    if debug :
+        print(f"++ WORK_JOURNAL_FILE_DIR ........ {WORK_JOURNAL_FILE_DIR}")
+        print(f"++ targetFile ................... {targetFile}")
 
-if exists(WORK_JOURNAL_FILE_PATH) :
-    # Copy the journal source file to the new file name.
-    shutil.copy(WORK_JOURNAL_FILE_PATH, journalBackupDest)
-    print(f"++++ Work journal file copied to backup dir.")
-    print(f"++ File ............ {WORK_JOURNAL_FILE_PATH}")
-    print(f"++ Destination ..... {BACKUP_DIR}")
-    print(f"++ Backup File ..... {journalBackupDest}")
-else :
-    print(f"ERROR: File does not exist.")
-    print(f"File: {WORK_JOURNAL_FILE_PATH}")
+    # Prepend the destination directory to the targetFile
+    journalBackupDest = WORK_JOURNAL_FILE_DIR + BACKUP_DIR + targetFile
+    if debug :
+        print(f"++ journalBackupDest ............ {journalBackupDest}")
 
-# ------------------------------
+    if exists(WORK_JOURNAL_FILE_PATH) :
+        # Copy the journal source file to the new file name.
+        shutil.copy(WORK_JOURNAL_FILE_PATH, journalBackupDest)
+        print(f"++++ Work journal file copied to backup dir.")
+        print(f"++ File ................. {WORK_JOURNAL_FILE_PATH}")
+        print(f"++ Destination .......... {BACKUP_DIR}")
+        print(f"++ Journal backup ....... {journalBackupDest}")
+    else :
+        print(f"ERROR: File does not exist.")
+        print(f"File: {WORK_JOURNAL_FILE_PATH}")
 
-# Copy the gethrs.csv file to yyy-mm-dd_gethrs.csv
-if debug :
-    print(f"++ Backup the HRS file. +++++++++")
-    print(f"++ HRS_FILE_DIR ................. {HRS_FILE_DIR}")
-    print(f"++ HRS_FILE ..................... {HRS_FILE}")
-    print(f"++ HRS_FILE_PATH ................ {HRS_FILE_PATH}")
+    # ------------------------------
 
-# Prepend the date to the filename
-#targetFile = "test" + "_" + date + "_" + HRS_FILE
-targetFile = date + "_" + HRS_FILE
+    # Copy the gethrs.csv file to yyy-mm-dd_gethrs.csv
+    if debug :
+        print(f"++ Backup the HRS file. +++++++++")
+        print(f"++ HRS_FILE_DIR ................. {HRS_FILE_DIR}")
+        print(f"++ HRS_FILE ..................... {HRS_FILE}")
+        print(f"++ HRS_FILE_PATH ................ {HRS_FILE_PATH}")
 
-# Putting the HRS file in the same DIR as the Journal file.
-hrsBackupDest = WORK_JOURNAL_FILE_DIR + BACKUP_DIR + targetFile
-if debug :
-    print(f"++ targetFile ................... {targetFile}")
-    print(f"++ hrsBackupDest................. {hrsBackupDest}")
+    # Prepend the date to the filename
+    #targetFile = "test" + "_" + date + "_" + HRS_FILE
+    targetFile = date + "_" + HRS_FILE
 
-if exists(HRS_FILE_PATH) :
-    # Copy the HRS source file to the new file name.
-    shutil.copy(HRS_FILE_PATH, hrsBackupDest)
-    print(f"++++ Hrs file copied to backup dir.")
-    print(f"++ File ............ {HRS_FILE_PATH}")
-    print(f"++ Destination ..... {BACKUP_DIR}")
-    print(f"++ HRS backup ...... {hrsBackupDest}")
-else :
-    print(f"ERROR: File does not exist.")
-    print(f"File: {HRS_FILE_PATH}")
+    # Putting the HRS file in the same DIR as the Journal file.
+    hrsBackupDest = WORK_JOURNAL_FILE_DIR + BACKUP_DIR + targetFile
+    if debug :
+        print(f"++ targetFile ................... {targetFile}")
+        print(f"++ hrsBackupDest................. {hrsBackupDest}")
 
-# Prompt use to start vi on the backup journal file.
+    if exists(HRS_FILE_PATH) :
+        # Copy the HRS source file to the new file name.
+        shutil.copy(HRS_FILE_PATH, hrsBackupDest)
+        print("")
+        print(f"++++ Hrs file copied to backup dir.")
+        print(f"++ File ................. {HRS_FILE_PATH}")
+        print(f"++ Destination .......... {BACKUP_DIR}")
+        print(f"++ HRS backup ........... {hrsBackupDest}")
+    else :
+        print(f"ERROR: File does not exist.")
+        print(f"File: {HRS_FILE_PATH}")
 
-debug = True    #debug
-response = input("Edit backup Journal file? ")
-if response == "y" :
-    subprocess.run(['vim', journalBackupDest])
-else :
-    print(f"++++ The Journal file needs to be updated.")
+    # Prompt use to start vi on the backup journal file.
+
+    print("")
+    response = input("++ Edit backup Journal file? ")
+    if response == "y" :
+        subprocess.run(['vim', journalBackupDest])
+    else :
+        print(f"++ The Journal should be updated!!")
 
 '''
 # ----------------------------------------------------------------------
@@ -123,8 +126,18 @@ else :
 # ----------------------------------------------------------------------
 
 --------------------------------------------------
+buj, Ver 1.1
+--------------------------------------------------
+- Minor changes
+- Added
+    if __name__ == '__main__' :
+- Updated the indentations
+- Updated some user messages
+
+--------------------------------------------------
 buj, Ver 1.0
 --------------------------------------------------
 - Initial version
 '''
+
 
