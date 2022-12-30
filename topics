@@ -23,7 +23,7 @@ debug = False
 PROG_CONFIG = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "2", \
-     "min_ver"        : "0", \
+     "min_ver"        : "1", \
     }
 PROG_CONFIG["ver"] = PROG_CONFIG["maj_ver"] + "." + PROG_CONFIG["min_ver"]
 
@@ -132,66 +132,84 @@ def PrintExitMesg () :
 # Main MAIN main
 # ----------------------------------------------------------------------
 
-# Initialize the options parser
-parser = OptionParser()
-parser.add_option("-c", type="int", dest="day_count", \
-                 help = "Display records for this many days")
+if __name__ == '__main__' :
 
-# Could not get this to work. Grrrrr. Irritating.
-parser.add_option('-d', action ='store_true', dest='debug', \
-                 help = 'Set debug mode')
-#parser.set_defaults(debug = False)
+    # Initialize the options parser
+    parser = OptionParser()
+    parser.add_option("-c", type="int", dest="day_count", \
+                  help = "Display records for this many days")
 
-parser.add_option('-f', action = 'store_true', default = False,\
-                    dest = "fullHeaders",
-                    help = 'Display full headers')
+    # Could not get this to work. Grrrrr. Irritating.
+    parser.add_option('-d', action ='store_true', dest='debug', \
+                    help = 'Set debug mode')
+    #parser.set_defaults(debug = False)
 
-# Collect any supplied options.
-(options, args) = parser.parse_args()
+    parser.add_option('-f', action = 'store_true', default = False,\
+                        dest = "fullHeaders",
+                        help = 'Display full headers')
 
-debug = options.debug
+    # Collect any supplied options.
+    (options, args) = parser.parse_args()
 
-# Load the file contents
-FD_INPUT = open(INPUT_FILE, 'r')
-content = FD_INPUT.readlines()
+    debug = options.debug
 
-if debug :
-    print("++ options ............." + str(options))
+    # Load the file contents
+    FD_INPUT = open(INPUT_FILE, 'r')
+    content = FD_INPUT.readlines()
 
-# Set default number of days to one
-if options.day_count == None :
-    options.day_count = 1
+    if debug :
+        print("++ options ............." + str(options))
 
-if debug :
-    print("++ Display records for " + str(options.day_count) + " days.")
+    # Set default number of days to one
+    if options.day_count == None :
+        options.day_count = 1
 
-# Get to the first D:: record. Skip the file's header section.
-while True :
-    if re.search(RE_START_DAY, content[ln_ptr]) : 
-        break
-    ln_ptr += 1
+    if debug :
+        print("++ Display records for " + str(options.day_count) + " days.")
 
-# Any initial lines in the input file have been skipped. There could be an
-# arbitrary number of lines preceeding the first day record.
+    # Get to the first D:: record. Skip the file's header section.
+    while True :
+        if re.search(RE_START_DAY, content[ln_ptr]) : 
+            break
+        ln_ptr += 1
 
-if debug :
-    print("++ options ............." + str(options))
+    # Any initial lines in the input file have been skipped. 
+    # There could be an arbitrary number of lines preceeding the
+    # first day record.
 
-Process_File(ln_ptr, options.day_count, options.fullHeaders)
+    if debug :
+        print("++ options ............." + str(options))
 
-#PrintExitMesg() # Don't want extra output. Shows up in files.
+    Process_File(ln_ptr, options.day_count, options.fullHeaders)
 
-exit()
+    #PrintExitMesg() # Don't want extra output. Shows up in files.
+
+    exit()
 
 '''
 # ----------------------------------------------------------------------
 # TODO ToDo todo
 # ----------------------------------------------------------------------
+ToDo: It is assumed to grab the following 3 lines after the first Topic::
+    line is found. We should instead print an arbitrary number of header
+    lines, until the header end line is found.
 
+    Should instead ....
+    Parse the next line. 
+    If it is another Topic:: break the loop and start the outside parse
+    Otherwise, print the header section
+    Until the header end if found
 
 # ----------------------------------------------------------------------
 # History
 # ----------------------------------------------------------------------
+# --------------------------------------------------
+# topics, Ver: 2.1
+# 2022-12-27
+# --------------------------------------------------
+- Add
+    if __name__ == '__main__' :
+- Adjust indents
 
 # --------------------------------------------------
 # topics, Ver: 2.0
