@@ -91,6 +91,7 @@ def ProgUsage(fList) :
 def GetFileDescription(file) :
 # ----------------------------------------
     funcName = sys._getframe().f_code.co_name
+    #debug = True    #debug
     if debug :
         print(f"++++ {funcName} ++++++++++++++++++++")
 
@@ -100,11 +101,31 @@ def GetFileDescription(file) :
     else :
         return(" ERROR: File does not exist.\n")
 
-    description =  line.split(":")
+    elementList =  line.split(":")
+    if debug :
+        print ("++ elementList ....... " + str(elementList))
+
+    '''
+Damn! Can't figure out how to trap the eror when there is no Description: line.
+Or, when there is only 1 element.
+Or, when it is an empty file.
+
+    #if not elementList :
+    if elementList == [] :
+        print ("++ elementList empty ")
+        description = "BLANK DESCRIPTION"
+        print ("++ Description ....... " + str(description))
+    else :
+        print ("++ elementList not empty ")
+        description = elementList[1]
+        print ("++ Description ....... " + str(description))
+    '''
 
     if debug :
-        print ("++ Description ....... " + str(description))
-    return(description[1])
+        #print ("++ Description ....... " + str(description))
+        print ("++ elementList ....... " + str(elementList))
+    #return(description)
+    return(elementList[1])
 
 # ----------------------------------------
 def ParseUserOptions () :
