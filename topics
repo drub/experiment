@@ -40,7 +40,7 @@ RE_TOPIC     = "^Topic::"
 # ----------------------------------------------------------------------
 # Globals
 # ----------------------------------------------------------------------
-ln_ptr = 0    # The "contents" list will index from 0
+linePtr = 0    # The "contents" list will index from 0
 
 
 # --------------------------------------------------
@@ -169,9 +169,9 @@ if __name__ == '__main__' :
 
     # Get to the first D:: record. Skip the file's header section.
     while True :
-        if re.search(RE_START_DAY, content[ln_ptr]) : 
+        if re.search(RE_START_DAY, content[linePtr]) :
             break
-        ln_ptr += 1
+        linePtr += 1
 
     # Any initial lines in the input file have been skipped. 
     # There could be an arbitrary number of lines preceeding the
@@ -180,7 +180,7 @@ if __name__ == '__main__' :
     if debug :
         print("++ options ............." + str(options))
 
-    Process_File(ln_ptr, options.day_count, options.fullHeaders)
+    Process_File(linePtr, options.day_count, options.fullHeaders)
 
     #PrintExitMesg() # Don't want extra output. Shows up in files.
 
