@@ -13,12 +13,14 @@ import subprocess
 # ----------------------------------------------------------------------
 debug = True
 debug = False
+#debug = True
 ENV_VAR_NAME = "JOURNALPATH"
+
 
 PROG_CONFIG = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "1", \
-     "min_ver"        : "2", \
+     "min_ver"        : "3", \
     }
 PROG_CONFIG["ver"] = PROG_CONFIG["maj_ver"] + "." + PROG_CONFIG["min_ver"]
 
@@ -91,7 +93,6 @@ def ProgUsage(fList) :
 def GetFileDescription(file) :
 # ----------------------------------------
     funcName = sys._getframe().f_code.co_name
-    #debug = True    #debug
     if debug :
         print(f"++++ {funcName} ++++++++++++++++++++")
 
@@ -101,31 +102,26 @@ def GetFileDescription(file) :
     else :
         return(" ERROR: File does not exist.\n")
 
-    elementList =  line.split(":")
+    elementList =  line.split("::")
+    elementLen = len(elementList)
+
     if debug :
         print ("++ elementList ....... " + str(elementList))
+        print ("++ Item Count ........ " + str(elementLen))
+        print("++ First token ....... " + str(elementList[0]))
 
-    '''
-Damn! Can't figure out how to trap the eror when there is no Description: line.
-Or, when there is only 1 element.
-Or, when it is an empty file.
-
-    #if not elementList :
-    if elementList == [] :
-        print ("++ elementList empty ")
-        description = "BLANK DESCRIPTION"
-        print ("++ Description ....... " + str(description))
+    if elementLen < 2 :
+        if debug :
+            print ("++ elementList empty ")
+            print ("++ Description ....... " + str(description))
+        description = " ++ First line does not look like a description. Could be blank.\n"
     else :
-        print ("++ elementList not empty ")
         description = elementList[1]
-        print ("++ Description ....... " + str(description))
-    '''
 
-    if debug :
-        #print ("++ Description ....... " + str(description))
-        print ("++ elementList ....... " + str(elementList))
-    #return(description)
-    return(elementList[1])
+    if elementList[0] != 'Description' :
+        description = " ERROR: Malformed first line. First token should be \"Description\".\n"
+
+    return(description)
 
 # ----------------------------------------
 def ParseUserOptions () :
@@ -226,6 +222,15 @@ if __name__ == '__main__' :
 # ----------------------------------------------------------------------
 # History HISTORY history
 # ----------------------------------------------------------------------
+
+--------------------------------------------------
+j, Ver 1.3
+--------------------------------------------------
+- Cleaned up getting the description line out of the journal files, the first line of the file.
+- Better error detection and reporting
+- Parse the line on ::
+- The syntax for the first line is
+Description:: <text>
 
 --------------------------------------------------
 j, Ver 1.2
