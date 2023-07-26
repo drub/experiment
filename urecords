@@ -28,9 +28,7 @@ HOME = os.environ['HOME'] # Use the $HOME env variable
 prog_config = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "0", \
-     "min_ver"        : "1", \
-     "sep_ln_len"     : 80,    # Dashed line between displayed recs \
-     "plus_ln_len"    : 50,    # Line preceeding an error message \
+     "min_ver"        : "2", \
      "ifname"         : HOME + "/sync_synology/home/job-search/job.txt" \
     }
 
@@ -111,6 +109,22 @@ def Closing_message(record_count):
 
 
 # --------------------------------------------------
+def Get_notes_fields (fd, lncnt) :
+# --------------------------------------------------
+    while True :
+        for line in fd :
+            line = line.rstrip('\r\n') # Strip the trailing EOL
+            #print ('++++ Get the notes ........... ', lncnt) #debug
+            lncnt += 1
+
+            tokens = line.split(" ")
+            if ( (tokens[0] == "----------------") and (tokens[1] == "End") and (tokens[2] == "Prospect") ) :
+                return(lncnt)
+            else :
+                print (line)
+
+
+# --------------------------------------------------
 def Print_prospect_record (file, file_line_cnt) :
 # --------------------------------------------------
     # Inside a prospect record.
@@ -149,9 +163,15 @@ def Print_prospect_record (file, file_line_cnt) :
             #print ('++++ ', description, ' ..... ', value) #debug
             print ("{:<5} {:>20} {:<55}".format(file_line_cnt, description, value))
 
-            # If this line is a "Note:: " record, consume all following lines
-            # until the # "End Prospect" record is found. The "Note :: " line is the last
-            # structured line in the record.
+            # If this line is a "Note:: " record, display all following lines
+            # until the # "End Prospect" record is found.
+            # The "Note :: " line is the last structured line in the record.
+            #
+            if (tokens[0] == "Note") :
+                #print ('++++ Get the notes ........... ', file_line_cnt) #debug
+                file_line_cnt = Get_notes_fields(file, file_line_cnt)
+                #print ('++++ Done getting notes ...... ', file_line_cnt) #debug
+                return(file_line_cnt)
 
 
 # ----------------------------------------------------------------------
@@ -219,18 +239,22 @@ exit()
 
 
 '''
+Find, parse unemployment records
+
 # ----------------------------------------------------------------------
 # TODO ToDo todo
 # ----------------------------------------------------------------------
 
-- Display note lines after the "Note:: " record, and before the "End" record.
 - Implement the -c flag
 
 # ----------------------------------------------------------------------
 # History
 # ----------------------------------------------------------------------
 
-Find, parse unemployment records
+# --------------------------------------------------
+# Ver: 0.2
+# --------------------------------------------------
+- Displays an arbitrary number of notes lines following the "Note:: " record.
 
 # --------------------------------------------------
 # Ver: 0.1
