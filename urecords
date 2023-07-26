@@ -1,0 +1,243 @@
+#!/Users/thedrub/anaconda3/bin/python
+
+# ----------------------------------------------------------------------
+# Libraries
+# ----------------------------------------------------------------------
+#import pandas as pd
+import sys
+#import csv
+import os
+from optparse import OptionParser
+from pathlib import Path
+
+# ----------------------------------------------------------------------
+# My Libraries
+# ----------------------------------------------------------------------
+lib_path = os.environ['HOME'] + "/bin/lib"
+sys.path.append(lib_path)
+from format_str import StrCol
+
+# ----------------------------------------------------------------------
+# Files
+# ----------------------------------------------------------------------
+HOME = os.environ['HOME'] # Use the $HOME env variable
+
+# ----------------------------------------------------------------------
+# Constants
+# ----------------------------------------------------------------------
+prog_config = \
+    {"name"          : os.path.basename(sys.argv[0]), \
+     "maj_ver"        : "0", \
+     "min_ver"        : "1", \
+     "sep_ln_len"     : 80,    # Dashed line between displayed recs \
+     "plus_ln_len"    : 50,    # Line preceeding an error message \
+     "ifname"         : HOME + "/sync_synology/home/job-search/job.txt" \
+    }
+
+prog_config["ver"] = prog_config["maj_ver"] + "." + prog_config["min_ver"]
+
+# ----------------------------------------------------------------------
+# Initializations
+# ----------------------------------------------------------------------
+line_count = 0
+record_count = 0
+
+debug = True    #debug
+debug = False   #debug
+
+# ----------------------------------------------------------------------
+# Functions
+# ----------------------------------------------------------------------
+
+# --------------------------------------------------
+def Display_file_info(fname):
+# --------------------------------------------------
+# A debug function to display files used.
+
+    print (fname)
+
+'''
+    count = 0
+    if isinstance(f_list, list):
+        #print("++++++ Found list" ) #debug
+        for fname in f_list:
+            count += 1
+            base_str = "." * 100
+            tmp_str = StrCol(base_str, "++ Input file ", 0)
+            tmp_str = StrCol(tmp_str, fname, 25 )
+            print (tmp_str)
+    elif isinstance(f_list, str):
+        #print("++++++ Found str" ) #debug
+        base_str = "." * 100
+        tmp_str = StrCol(base_str, "++ Input file ", 0)
+        tmp_str = StrCol(tmp_str, f_list, 25 )
+        print (tmp_str)
+
+    #print("++ Count: " + str(count)) #debug
+    base_str = "." * 100
+    tmp_str = StrCol(base_str, "++ Output file ", 0)
+    tmp_str = StrCol(tmp_str, prog_config["ofname"], 25 )
+    print (tmp_str)
+'''
+
+# --------------------------------------------------
+def Display_tokens(token_list):
+# --------------------------------------------------
+# A debug function to display a nice list.
+
+    i = 0
+    for token in token_list:
+        print ("[{0:2}] ... {1}".format(i, token))
+        i += 1
+
+
+# --------------------------------------------------
+def Closing_message(record_count):
+# --------------------------------------------------
+    base_str = "." * 24 + " "
+    data_col = 25
+
+    if record_count == 0:
+        print ("-"*70)
+        print("")
+        tmp_str = StrCol(base_str, "No records found.", 0)
+        print(tmp_str)
+    else:
+        print ("-"*70)
+        print("")
+        tmp_str = StrCol(base_str, "Records displayed ", 0)
+        print(tmp_str, end = '')    # Supress newline)
+        print(record_count)
+
+
+# --------------------------------------------------
+def Print_prospect_record (file, file_line_cnt) :
+# --------------------------------------------------
+    # Inside a prospect record.
+    linecnt = 0     # Count lines inside the prospect entry found
+
+    print ("-"*70)
+    #print ('+++++ Begin +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ', file_line_cnt)   #debug
+
+    for line in file :
+        line = line.rstrip('\r\n') # Strip the trailing EOL
+        linecnt += 1
+        file_line_cnt += 1
+
+        # First, test to see if we have a record end line.
+        tokens = line.split(" ")
+        #print ('++++ len(tokens) ............. ', len(tokens)) #debug
+        #print ('++++ tokens .................. ', tokens) #debug
+
+        if (len(tokens) == 4) :
+            # It is could be end line. Validate. If end of record, return().
+            #Display_tokens(tokens)  #debug
+
+            if ( (tokens[0] == "----------------") and (tokens[1] == "End") and (tokens[2] == "Prospect") ) :
+                #print ('+++++ End +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ', file_line_cnt)   #debug
+                return(file_line_cnt)
+
+        # Next, when not the end, display the record.
+        tokens = line.split("::")
+        #Display_tokens(tokens) #debug
+
+        if (len(tokens) > 1) :
+            # It is a record line
+            description = tokens[0]
+            value       = tokens[1]
+
+            #print ('++++ ', description, ' ..... ', value) #debug
+            print ("{:<5} {:>20} {:<55}".format(file_line_cnt, description, value))
+
+            # If this line is a "Note:: " record, consume all following lines
+            # until the # "End Prospect" record is found. The "Note :: " line is the last
+            # structured line in the record.
+
+
+# ----------------------------------------------------------------------
+# Main MAIN main
+# ----------------------------------------------------------------------
+
+print ("")
+print (prog_config["name"]  + " " + prog_config["ver"]) # Banner line.
+
+if debug :
+    print ('++ Number of arguments ....... ', len(sys.argv))
+    print ('++ Argument List:', str(sys.argv))
+    Display_file_info(prog_config['ifname'])
+
+# Initialize the options parser
+parser = OptionParser()
+parser.add_option("-a", action="store_true", dest="all", \
+                 help = "Display all records, regarless of state")
+parser.add_option("-c", type="int", dest="rec_count", \
+                 help = "Display only this number of records")
+
+# Collection the options passed.
+(opts, args) = parser.parse_args()
+
+#print("++ options ...") #debug
+#print(opts) #debug
+
+if opts.all :
+    print("++ Option: Display all records. Not filtered \"State\" field.")
+if opts.rec_count != None:
+    print("++ Option: Display " + str(opts.rec_count) + " records.")
+
+with open(str(prog_config['ifname']), 'r') as in_fd:
+    for line in in_fd:
+        line = line.rstrip('\r\n') # Strip the trailing EOL
+        line_count += 1
+
+        if debug :  #debug
+            print ('++ Line no ................... ', line_count) #debug
+            print ('++ Line ...................... ', line) #debug
+
+        token = line.split(" ")
+        if debug :  #debug
+            print ('++ tokens .................... ', token) #debug
+        if (token[0] == "----------------") :
+            # A record has been found.
+
+            record_count += 1
+            if ( record_count > 1) and (token[1] == "Begin") and (token[2] == "Prospect") :
+                #print ("++ Record found +++++") #debug
+                #print ('++ Line count ................ ', line_count) #debug
+                #print ('-------------------- Call Print_prospect_record --------------------', line_count) #debug
+                line_count = Print_prospect_record(in_fd, line_count)
+                #print ('-------------------- Return Print_prospect_record ------------------', line_count) #debug
+                #print ('++ Line count ................ ', line_count) #debug
+
+#print ('++ Record count .............. ', record_count) #debug
+Closing_message(record_count)
+
+exit()
+
+# ----------------------------------------------------------------------
+# End END end
+# ----------------------------------------------------------------------
+
+
+'''
+# ----------------------------------------------------------------------
+# TODO ToDo todo
+# ----------------------------------------------------------------------
+
+- Display note lines after the "Note:: " record, and before the "End" record.
+- Implement the -c flag
+
+# ----------------------------------------------------------------------
+# History
+# ----------------------------------------------------------------------
+
+Find, parse unemployment records
+
+# --------------------------------------------------
+# Ver: 0.1
+# --------------------------------------------------
+Functional. Displays required info for employment contacts for
+the WA state unemployment folks.
+- Displays all records.
+- Does not yet implement the -c option, though displayed in -h
+
+'''
