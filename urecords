@@ -281,4 +281,43 @@ the WA state unemployment folks.
 - Displays all records.
 - Does not yet implement the -c option, though displayed in -h
 
+# --------------------------------------------------
+# Input file Entry formats
+# --------------------------------------------------
+
+Added the "Zip:: " record
+
+---------------- Begin Prospect 1.1
+Title or Ref #::
+-----------------------------------
+Employer or Bus name:: 
+How:: In person, Online, Phone, Email, Mail
+Type:: Application, resume, Interview, Inquiry
+Address:: 
+City:: 
+State:: 
+Zip:: 
+Website or email:: 
+Phone:: 
+Date of contact:: 
+Date entered:: tbd
+Note:: 
+--------------- End Prospect 1.1
+
+
+---------------- Begin Prospect 1.0
+Title or Ref #::
+-----------------------------------
+Employer or Bus name::
+How:: In person, Online, Phone, Email, Mail
+Type:: Application, resume, Interview, Inquiry
+Address::
+City::
+State::
+Website or email::
+Phone::
+Date of contact::
+Date entered:: tbd
+Note::
+--------------- End Prospect 1.0
 '''
