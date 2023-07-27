@@ -28,7 +28,7 @@ HOME = os.environ['HOME'] # Use the $HOME env variable
 prog_config = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "1", \
-     "min_ver"        : "0", \
+     "min_ver"        : "1", \
      "ifname"         : HOME + "/sync_synology/home/job-search/job.txt" \
     }
 
@@ -99,7 +99,8 @@ def Get_notes_fields (fd, lncnt) :
             if ( (tokens[0] == "----------------") and (tokens[1] == "End") and (tokens[2] == "Prospect") ) :
                 return(lncnt)
             else :
-                print (line)
+                print ("{:<5} {:<70}".format(lncnt, line))
+            #print ("{:<5} {:>20} {:<55}".format(file_line_cnt, description, value))
 
 
 # --------------------------------------------------
@@ -255,6 +256,12 @@ Find, parse unemployment records
 # ----------------------------------------------------------------------
 # History
 # ----------------------------------------------------------------------
+
+# --------------------------------------------------
+# Ver: 1.1
+# --------------------------------------------------
+- Fix displaying the Notes lines
+  Added line numbers, like the rest of the output.
 
 # --------------------------------------------------
 # Ver: 1.0
