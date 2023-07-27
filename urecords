@@ -27,8 +27,8 @@ HOME = os.environ['HOME'] # Use the $HOME env variable
 # ----------------------------------------------------------------------
 prog_config = \
     {"name"          : os.path.basename(sys.argv[0]), \
-     "maj_ver"        : "0", \
-     "min_ver"        : "2", \
+     "maj_ver"        : "1", \
+     "min_ver"        : "0", \
      "ifname"         : HOME + "/sync_synology/home/job-search/job.txt" \
     }
 
@@ -38,7 +38,8 @@ prog_config["ver"] = prog_config["maj_ver"] + "." + prog_config["min_ver"]
 # Initializations
 # ----------------------------------------------------------------------
 line_count = 0
-record_count = 0
+entry_count = 0
+entries_displayed_count = 0
 
 debug = True    #debug
 debug = False   #debug
@@ -54,34 +55,11 @@ def Display_file_info(fname):
 
     print (fname)
 
-'''
-    count = 0
-    if isinstance(f_list, list):
-        #print("++++++ Found list" ) #debug
-        for fname in f_list:
-            count += 1
-            base_str = "." * 100
-            tmp_str = StrCol(base_str, "++ Input file ", 0)
-            tmp_str = StrCol(tmp_str, fname, 25 )
-            print (tmp_str)
-    elif isinstance(f_list, str):
-        #print("++++++ Found str" ) #debug
-        base_str = "." * 100
-        tmp_str = StrCol(base_str, "++ Input file ", 0)
-        tmp_str = StrCol(tmp_str, f_list, 25 )
-        print (tmp_str)
-
-    #print("++ Count: " + str(count)) #debug
-    base_str = "." * 100
-    tmp_str = StrCol(base_str, "++ Output file ", 0)
-    tmp_str = StrCol(tmp_str, prog_config["ofname"], 25 )
-    print (tmp_str)
-'''
 
 # --------------------------------------------------
 def Display_tokens(token_list):
 # --------------------------------------------------
-# A debug function to display a nice list.
+# A debug function to display the elements in a list.
 
     i = 0
     for token in token_list:
@@ -90,12 +68,12 @@ def Display_tokens(token_list):
 
 
 # --------------------------------------------------
-def Closing_message(record_count):
+def Closing_message(entry_count):
 # --------------------------------------------------
     base_str = "." * 24 + " "
     data_col = 25
 
-    if record_count == 0:
+    if entry_count == 0:
         print ("-"*70)
         print("")
         tmp_str = StrCol(base_str, "No records found.", 0)
@@ -105,7 +83,7 @@ def Closing_message(record_count):
         print("")
         tmp_str = StrCol(base_str, "Records displayed ", 0)
         print(tmp_str, end = '')    # Supress newline)
-        print(record_count)
+        print(entry_count)
 
 
 # --------------------------------------------------
@@ -190,46 +168,71 @@ if debug :
 parser = OptionParser()
 parser.add_option("-a", action="store_true", dest="all", \
                  help = "Display all records, regarless of state")
-parser.add_option("-c", type="int", dest="rec_count", \
-                 help = "Display only this number of records")
+parser.add_option("-c", type="int", dest="desired_entry_count", \
+                 help = "Display this number of entries from the input file")
 
 # Collection the options passed.
 (opts, args) = parser.parse_args()
 
-#print("++ options ...") #debug
-#print(opts) #debug
+if debug :
+    print("++ options ...") #debug
+    print(opts) #debug
 
 if opts.all :
     print("++ Option: Display all records. Not filtered \"State\" field.")
-if opts.rec_count != None:
-    print("++ Option: Display " + str(opts.rec_count) + " records.")
+
+if opts.desired_entry_count == None :
+        opts.desired_entry_count = 100
+else  :
+    print("++ Option: Display " + str(opts.desired_entry_count) + " records.")
 
 with open(str(prog_config['ifname']), 'r') as in_fd:
     for line in in_fd:
         line = line.rstrip('\r\n') # Strip the trailing EOL
         line_count += 1
 
+        #debug = True    #debug
         if debug :  #debug
             print ('++ Line no ................... ', line_count) #debug
             print ('++ Line ...................... ', line) #debug
 
         token = line.split(" ")
+
         if debug :  #debug
             print ('++ tokens .................... ', token) #debug
+        #debug = False    #debug
+
         if (token[0] == "----------------") :
-            # A record has been found.
+            # A correct first token has been found. Check the other tokens.
+            if debug :
+                print ('-------------------- Correct first token ---------------------------', line_count) #debug
+                print ('++ desired_entry_count ....... ', opts.desired_entry_count) #debug
 
-            record_count += 1
-            if ( record_count > 1) and (token[1] == "Begin") and (token[2] == "Prospect") :
-                #print ("++ Record found +++++") #debug
-                #print ('++ Line count ................ ', line_count) #debug
-                #print ('-------------------- Call Print_prospect_record --------------------', line_count) #debug
-                line_count = Print_prospect_record(in_fd, line_count)
-                #print ('-------------------- Return Print_prospect_record ------------------', line_count) #debug
+            if (token[1] == "Begin") and (token[2] == "Prospect") :
+                # A record has been found. Skip the initial template record in
+                # the input file.
+
+                entry_count += 1
+
+                if debug :
+                    print ('-------------------- Entry found -----------------------------------', line_count) #debug
+                    print ('++ entry_count ............... ', entry_count) #debug
+                    print ('++ Line count ................ ', line_count) #debug
+                    print ('++ tokens .................... ', token) #debug
+
+                # Skip the first entry. It is a template at the beginning of the
+                # input file
+
+                if (entry_count > 1) and (entry_count <= (opts.desired_entry_count + 1)) :
+
+                    #print ('-------------------- Call Print_prospect_record --------------------', line_count) #debug
+                    line_count = Print_prospect_record(in_fd, line_count)
+                    entries_displayed_count += 1
+                    #print ('-------------------- Return Print_prospect_record ------------------', line_count) #debug
                 #print ('++ Line count ................ ', line_count) #debug
 
-#print ('++ Record count .............. ', record_count) #debug
-Closing_message(record_count)
+#print ('++ Record count .............. ', entry_count) #debug
+Closing_message(entries_displayed_count)
 
 exit()
 
@@ -245,11 +248,18 @@ Find, parse unemployment records
 # TODO ToDo todo
 # ----------------------------------------------------------------------
 
-- Implement the -c flag
+- Check for a valid entry version. Currently only knows about entry ver 1.0
+  If the entry format changes, would need to alter execution based on entry
+  format changes.
 
 # ----------------------------------------------------------------------
 # History
 # ----------------------------------------------------------------------
+
+# --------------------------------------------------
+# Ver: 1.0
+# --------------------------------------------------
+- Displays N records, depending on the "-cN" runtime option
 
 # --------------------------------------------------
 # Ver: 0.2
