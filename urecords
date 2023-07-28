@@ -28,7 +28,7 @@ HOME = os.environ['HOME'] # Use the $HOME env variable
 prog_config = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "1", \
-     "min_ver"        : "1", \
+     "min_ver"        : "2", \
      "ifname"         : HOME + "/sync_synology/home/job-search/job.txt" \
     }
 
@@ -89,18 +89,44 @@ def Closing_message(entry_count):
 # --------------------------------------------------
 def Get_notes_fields (fd, lncnt) :
 # --------------------------------------------------
+    debug = False
+
     while True :
         for line in fd :
-            line = line.rstrip('\r\n') # Strip the trailing EOL
-            #print ('++++ Get the notes ........... ', lncnt) #debug
             lncnt += 1
+            line = line.rstrip('\r\n') # Strip the trailing EOL
+
+            #debug = True
+            if debug :
+                print ('++++ linecnt ................. ', lncnt) #debug
+                print ('++++ line .................... ', line) #debug
 
             tokens = line.split(" ")
-            if ( (tokens[0] == "----------------") and (tokens[1] == "End") and (tokens[2] == "Prospect") ) :
+            if debug :
+                print ('++++ tokens[0] ............... |', tokens[0], "|") #debug
+                Display_tokens(tokens)  #debug
+
+            # Very odd
+            # This would not match the first instance of token[0] of the dashed line.
+            # It matched all further instances. Why?
+            # Could not figure it out. So, stop trying to match token[0].
+            # Works.
+            # Should be sufficient to find "End" and "Prospect" in the 2
+            # appropriate list locations e.g. 1 & 2
+
+            #if (tokens[0] == "----------------") :
+                #             ---------------
+                ##debug = True
+                #if debug :
+                #    print ('++++ Dashed record found ..... ', lncnt) #debug 
+
+            if ( (tokens[1] == "End") and (tokens[2] == "Prospect") ) :
+                if debug :
+                    print ('++++ End of entry found ...... ', lncnt) #debug 
                 return(lncnt)
+
             else :
                 print ("{:<5} {:<70}".format(lncnt, line))
-            #print ("{:<5} {:>20} {:<55}".format(file_line_cnt, description, value))
 
 
 # --------------------------------------------------
@@ -126,9 +152,10 @@ def Print_prospect_record (file, file_line_cnt) :
             # It is could be end line. Validate. If end of record, return().
             #Display_tokens(tokens)  #debug
 
-            if ( (tokens[0] == "----------------") and (tokens[1] == "End") and (tokens[2] == "Prospect") ) :
-                #print ('+++++ End +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ', file_line_cnt)   #debug
-                return(file_line_cnt)
+            if (tokens[0] == "----------------") :
+                if (tokens[1] == "End") and (tokens[2] == "Prospect") :
+                    #print ('+++++ End +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ', file_line_cnt)   #debug
+                    return(file_line_cnt)
 
         # Next, when not the end, display the record.
         tokens = line.split("::")
@@ -147,9 +174,14 @@ def Print_prospect_record (file, file_line_cnt) :
             # The "Note :: " line is the last structured line in the record.
             #
             if (tokens[0] == "Note") :
-                #print ('++++ Get the notes ........... ', file_line_cnt) #debug
+                #debug = True
+                if debug :
+                    print ('++ Get the notes ........... ', file_line_cnt) #debug
+
                 file_line_cnt = Get_notes_fields(file, file_line_cnt)
-                #print ('++++ Done getting notes ...... ', file_line_cnt) #debug
+
+                if debug :
+                    print ('++ Done getting notes ...... ', file_line_cnt) #debug
                 return(file_line_cnt)
 
 
@@ -205,6 +237,7 @@ with open(str(prog_config['ifname']), 'r') as in_fd:
 
         if (token[0] == "----------------") :
             # A correct first token has been found. Check the other tokens.
+            #debug = True    #debug
             if debug :
                 print ('-------------------- Correct first token ---------------------------', line_count) #debug
                 print ('++ desired_entry_count ....... ', opts.desired_entry_count) #debug
@@ -254,8 +287,16 @@ Find, parse unemployment records
   format changes.
 
 # ----------------------------------------------------------------------
-# History
+# History HISTORY
 # ----------------------------------------------------------------------
+
+# --------------------------------------------------
+# Ver: 1.2
+# --------------------------------------------------
+- Fix 
+  Problems with matching the dashed part of the last line of an entry. Stop
+  checking for the dashed part of the final entry line. Sheesh!
+- Supports entry version 1.1 and earlier.
 
 # --------------------------------------------------
 # Ver: 1.1
