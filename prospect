@@ -20,6 +20,7 @@ Zip::
 Website or email:: 
 Phone:: 
 Date of contact:: $dateStr
+Date entered:: tbd
 Note:: 
 --------------- End Prospect $verStr
 EOF
@@ -33,4 +34,5 @@ EOF
 # --------------------------------------------------
 # This script supports the data requirements when filing for WA state
 # unemployment benefits.
+#
 #
