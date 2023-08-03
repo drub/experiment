@@ -1,0 +1,36 @@
+#! /bin/bash
+
+verStr="1.1"
+
+dayStr=$(date "+%a")
+dateStr=$(date "+%Y-%m-%d")
+timeStr=$(date "+%H:%M:%S")
+
+cat << EOF
+---------------- Begin Prospect $verStr
+Title or Ref #:: 
+-----------------------------------
+Employer or Bus name:: 
+How:: In person, Online, Phone, Email, Mail
+Type:: Application, resume, Interview, Inquiry
+Address:: 
+City:: 
+State:: 
+Zip:: 
+Website or email:: 
+Phone:: 
+Date of contact:: $dateStr
+Note:: 
+--------------- End Prospect $verStr
+EOF
+
+# ----------------------------------------------------------------------
+# History history HISTORY
+# ----------------------------------------------------------------------
+#
+# --------------------------------------------------
+# Ver 1.0
+# --------------------------------------------------
+# This script supports the data requirements when filing for WA state
+# unemployment benefits.
+#
