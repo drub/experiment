@@ -1,13 +1,14 @@
 #! /bin/bash
 
-verStr="1.1"
+entryVerStr="1.1"
 
 dayStr=$(date "+%a")
 dateStr=$(date "+%Y-%m-%d")
 timeStr=$(date "+%H:%M:%S")
 
 cat << EOF
----------------- Begin Prospect $verStr
+
+---------------- Begin Prospect $entryVerStr
 Title or Ref #:: 
 -----------------------------------
 Employer or Bus name:: 
@@ -22,7 +23,8 @@ Phone::
 Date of contact:: $dateStr
 Date entered:: tbd
 Note:: 
---------------- End Prospect $verStr
+--------------- End Prospect $entryVerStr
+
 EOF
 
 # ----------------------------------------------------------------------
@@ -30,9 +32,13 @@ EOF
 # ----------------------------------------------------------------------
 #
 # --------------------------------------------------
+# Ver 1.1
+# --------------------------------------------------
+# Added empty lines for nicer visuals
+#
+# --------------------------------------------------
 # Ver 1.0
 # --------------------------------------------------
 # This script supports the data requirements when filing for WA state
 # unemployment benefits.
-#
 #
