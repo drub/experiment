@@ -21,7 +21,7 @@ Zip::
 Website or email:: 
 Phone:: 
 Date of contact:: $dateStr
-Date entered:: tbd
+Date entered:: 2023-
 Note:: 
 --------------- End Prospect $entryVerStr
 
@@ -30,6 +30,12 @@ EOF
 # ----------------------------------------------------------------------
 # History history HISTORY
 # ----------------------------------------------------------------------
+#
+# --------------------------------------------------
+# Ver 1.1
+# --------------------------------------------------
+# Added "2023-" to the "Date entered::" field.
+# Makes completing the record easier.
 #
 # --------------------------------------------------
 # Ver 1.1

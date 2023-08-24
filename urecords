@@ -28,7 +28,7 @@ HOME = os.environ['HOME'] # Use the $HOME env variable
 prog_config = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "1", \
-     "min_ver"        : "3", \
+     "min_ver"        : "4", \
      "ifname"         : HOME + "/sync_synology/home/job-search/job.txt" \
     }
 
@@ -231,42 +231,35 @@ with open(str(prog_config['ifname']), 'r') as in_fd:
             print ('++ Line no ................... ', line_count) #debug
             print ('++ Line ...................... ', line) #debug
 
-        token = line.split(" ")
+        tokens = line.split(" ")
 
         if debug :  #debug
-            print ('++ tokens .................... ', token) #debug
+            print ('++ tokens .................... ', tokens) #debug
         #debug = False    #debug
 
-        if (token[0] == "----------------") :
-            # A correct first token has been found. Check the other tokens.
-            #debug = True    #debug
-            if debug :
-                print ('-------------------- Correct first token ---------------------------', line_count) #debug
-                print ('++ desired_entry_count ....... ', opts.desired_entry_count) #debug
+        if (len(tokens) > 1) :
+            # It is possible that that line begins a record
 
-            if (token[1] == "Begin") and (token[2] == "Prospect") :
-                # A record has been found. Skip the initial template record in
-                # the input file.
-
+            if (tokens[1] == "Begin") and (tokens[2] == "Prospect") :
+                # A record has been found.
                 entry_count += 1
 
                 if debug :
                     print ('-------------------- Entry found -----------------------------------', line_count) #debug
+                    print ('++ desired_entry_count ....... ', opts.desired_entry_count) #debug
                     print ('++ entry_count ............... ', entry_count) #debug
                     print ('++ Line count ................ ', line_count) #debug
-                    print ('++ tokens .................... ', token) #debug
+                    print ('++ tokens .................... ', tokens) #debug
 
-                # Skip the first entry. It is a template at the beginning of the
-                # input file
-
-                if (entry_count > 1) and (entry_count <= (opts.desired_entry_count + 1)) :
+                if (entry_count > 0) and (entry_count <= (opts.desired_entry_count)) :
+                    # Time to print a prospect record
 
                     #print ('-------------------- Call Print_prospect_record --------------------', line_count) #debug
                     line_count = Print_prospect_record(in_fd, line_count,
                                                        (entry_count - 1) )
                     entries_displayed_count += 1
                     #print ('-------------------- Return Print_prospect_record ------------------', line_count) #debug
-                #print ('++ Line count ................ ', line_count) #debug
+                    #print ('++ Line count ................ ', line_count) #debug
 
 #print ('++ Record count .............. ', entry_count) #debug
 Closing_message(entries_displayed_count)
@@ -292,6 +285,19 @@ Find, parse unemployment records
 # ----------------------------------------------------------------------
 # History HISTORY
 # ----------------------------------------------------------------------
+
+# --------------------------------------------------
+# Ver: 1.4
+# --------------------------------------------------
+- Modification. Modify the "Begin" record line search.
+  This is kinda weird ... just like removing the search for the dashed part of
+  the record "End" record, the match does not work properly for the very first
+  record in the file. Remove the check on token 0, the dashed part.
+  Test only for "Begin" and "Prospect"
+
+  Turns out it was a logic error, not a problem matching the dash line.
+  Sheesh
+  Wonder if it would be better to keep the dash line test. Another day ....
 
 # --------------------------------------------------
 # Ver: 1.3
