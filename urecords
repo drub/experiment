@@ -28,7 +28,7 @@ HOME = os.environ['HOME'] # Use the $HOME env variable
 prog_config = \
     {"name"          : os.path.basename(sys.argv[0]), \
      "maj_ver"        : "1", \
-     "min_ver"        : "4", \
+     "min_ver"        : "5", \
      "ifname"         : HOME + "/sync_synology/home/job-search/job.txt" \
     }
 
@@ -106,28 +106,17 @@ def Get_notes_fields (fd, lncnt) :
                 print ('++++ tokens[0] ............... |', tokens[0], "|") #debug
                 Display_tokens(tokens)  #debug
 
-            # Very odd
-            # This would not match the first instance of token[0] of the dashed line.
-            # It matched all further instances. Why?
-            # Could not figure it out. So, stop trying to match token[0].
-            # Works.
-            # Should be sufficient to find "End" and "Prospect" in the 2
-            # appropriate list locations e.g. 1 & 2
+            # Protect the following  tests from error
+            if (len(tokens) > 1) :
 
-            #if (tokens[0] == "----------------") :
-                #             ---------------
-                ##debug = True
-                #if debug :
-                #    print ('++++ Dashed record found ..... ', lncnt) #debug 
+                if ( (tokens[1] == "End") and (tokens[2] == "Prospect") ) :
+                    if debug :
+                        print ('++++ End of entry found ...... ', lncnt) #debug 
+                    return(lncnt)
 
-            if ( (tokens[1] == "End") and (tokens[2] == "Prospect") ) :
-                if debug :
-                    print ('++++ End of entry found ...... ', lncnt) #debug 
-                return(lncnt)
-
-            else :
-                # Print the line from the entry.
-                print ("{:<5} {:<70}".format(lncnt, line))
+                else :
+                    # Print the line from the entry.
+                    print ("{:<5} {:<70}".format(lncnt, line))
 
 
 # --------------------------------------------------
@@ -256,7 +245,7 @@ with open(str(prog_config['ifname']), 'r') as in_fd:
 
                     #print ('-------------------- Call Print_prospect_record --------------------', line_count) #debug
                     line_count = Print_prospect_record(in_fd, line_count,
-                                                       (entry_count - 1) )
+                                                       entry_count)
                     entries_displayed_count += 1
                     #print ('-------------------- Return Print_prospect_record ------------------', line_count) #debug
                     #print ('++ Line count ................ ', line_count) #debug
@@ -285,6 +274,13 @@ Find, parse unemployment records
 # ----------------------------------------------------------------------
 # History HISTORY
 # ----------------------------------------------------------------------
+
+# --------------------------------------------------
+# Ver: 1.5
+# --------------------------------------------------
+- There was an error in finding the last line of the entry.
+  Checked that there is enough tokens for the following syntax test.
+- This entry corrects poor git() hygene. Added the wrong entry comment for 1.4
 
 # --------------------------------------------------
 # Ver: 1.4
