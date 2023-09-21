@@ -1,6 +1,6 @@
 #! /bin/bash
 
-entryVerStr="1.1"
+entryVerStr="1.2"
 
 dayStr=$(date "+%a")
 dateStr=$(date "+%Y-%m-%d")
@@ -12,8 +12,8 @@ cat << EOF
 Title or Ref #:: 
 -----------------------------------
 Employer or Bus name:: 
-How:: In person, Online, Phone, Email, Mail
-Type:: Application, resume, Interview, Inquiry
+How:: Website, Email, Phone, Mail, In person, Fax
+Type:: Application, Interview, Inquiry
 Address:: 
 City:: 
 State:: 
@@ -30,6 +30,12 @@ EOF
 # ----------------------------------------------------------------------
 # History history HISTORY
 # ----------------------------------------------------------------------
+#
+# --------------------------------------------------
+# Ver 1.2
+# --------------------------------------------------
+# Updated the "How:: " record with the current website menu
+# Updated the "Type:: " record with the current website menu
 #
 # --------------------------------------------------
 # Ver 1.1
