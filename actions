@@ -6,12 +6,18 @@
 #
 echo
 echo
+echo "++++ Work: journal_lighthouse_vision.txt ++++++++++++++++++++++++"
+grep -in '^Action::' /Users/thedrub/sync_synology/doc/journal/journal_lighthouse_vision.txt | grep -iv Done:
+
+echo
+echo
+echo
 echo "++++ Work: journal_work.txt ++++++++++++++++++++++++"
 grep -in '^Action::' /Users/thedrub/sync_synology/doc/journal/work/journal_work.txt | grep -iv Done:
 
 echo
 echo
-echo "++++ Coaching: journal_personal.txt ++++++++++++++++++++++++"
+echo "++++ Coaching: journal_coaching.txt ++++++++++++++++++++++++"
 grep -in '^Action::' /Users/thedrub/sync_synology/doc/journal/journal_coaching.txt | grep -iv Done:
 
 echo
