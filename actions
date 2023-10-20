@@ -11,6 +11,10 @@ grep -in '^Action::' /Users/thedrub/sync_synology/doc/journal/journal_lighthouse
 
 echo
 echo
+echo "++++ Work: job-search.txt ++++++++++++++++++++++++"
+grep -in '^Action::' /Users/thedrub/sync_synology/home/job-search/job.txt | grep -iv Done:
+
+echo
 echo
 echo "++++ Work: journal_work.txt ++++++++++++++++++++++++"
 grep -in '^Action::' /Users/thedrub/sync_synology/doc/journal/work/journal_work.txt | grep -iv Done:
