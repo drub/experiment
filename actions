@@ -31,6 +31,11 @@ grep -in '^Action::' /Users/thedrub/sync_synology/doc/journal/journal_personal.t
 
 echo
 echo
+echo "++++ Personal: journal_divorce.txt ++++++++++++++++++++++++"
+grep -in '^Action::' /Users/thedrub/sync_synology/doc/journal/journal_divorce.txt | grep -iv Done:
+
+echo
+echo
 echo "++++ Investments: journal_investments.txt ++++++++++++++++++++++++"
 grep -in '^Action::' /Users/thedrub/sync_synology/doc/journal/journal_investments.txt | grep -iv Done:
 
